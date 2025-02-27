@@ -40,7 +40,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   if (handler) {
     try {
       const input = request.params.arguments
-      return { toolResult: await handler(input), content: [] };
+      return await handler(input);
     } catch (error) {
       return { toolResult: { error: (error as Error).message }, content: [], isError: true };
     }

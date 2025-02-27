@@ -3,21 +3,6 @@ import { getBalanceHandler, getBlockHeightHandler } from "./handlers/helius.js";
 
 export const tools = [
   {
-    name: "calculate_sum",
-    description: "Add two numbers together",
-    inputSchema: {
-      type: "object",
-      properties: {
-        a: { type: "number" },
-        b: { type: "number" }
-      },
-      required: ["a", "b"]
-    },
-    outputSchema: {
-      type: "number"
-    }
-  },
-  {
     name: "helius_get_balance",
     description: "Get the balance of a Solana address",
     inputSchema: {
