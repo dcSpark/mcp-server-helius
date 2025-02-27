@@ -20,7 +20,7 @@ The MCP server exposes several tools to Claude:
 1. Clone this repository:
    ```bash
    git clone https://github.com/dcSpark/mcp-server-helius.git
-   cd shinkai-mcp-helius
+   cd mcp-server-helius
    ```
 
 2. Install dependencies:
@@ -50,7 +50,7 @@ To configure Claude Desktop to use this MCP server:
 ```json
 {
   "mcpServers": {
-    "shinkai-mcp-helius": {
+    "mcp-server-helius": {
       "command": "node",
       "args": [
         "/path/to/your/mcp-server-helius/build/index.js"
