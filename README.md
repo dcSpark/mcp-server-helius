@@ -53,7 +53,7 @@ To configure Claude Desktop to use this MCP server:
     "shinkai-mcp-helius": {
       "command": "node",
       "args": [
-        "/path/to/your/shinkai-mcp-helius/build/index.js"
+        "/path/to/your/mcp-server-helius/build/index.js"
       ],
       "env": {
         "HELIUS_API_KEY": "your-helius-api-key"
