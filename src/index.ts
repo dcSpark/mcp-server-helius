@@ -9,23 +9,12 @@ import {
 import { handlers, tools } from "./tools.js";
 
 const server = new Server({
-  name: "mcp-server",
+  name: "mcp-server-helius",
   version: "1.0.0",
 }, {
   capabilities: {
     tools: {}
   }
-});
-
-server.setRequestHandler(ListToolsRequestSchema, async () => {
-  return { tools: [] };
-});
-
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  if (request.params.name === "name_of_tool") {
-    return {};
-  }
-  throw new McpError(ErrorCode.MethodNotFound, "Method not found");
 });
 
 const transport = new StdioServerTransport();
