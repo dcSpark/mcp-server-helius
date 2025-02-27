@@ -39,7 +39,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const handler = handlers[request.params.name];
   if (handler) {
     const input = request.params.arguments
-    return { toolResult: await handler(input) };
+    return { toolResult: await handler(input), content: [] };
   }
   throw new McpError(ErrorCode.MethodNotFound, "Method not found");
 });
