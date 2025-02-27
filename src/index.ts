@@ -38,8 +38,12 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const handler = handlers[request.params.name];
   if (handler) {
-    const input = request.params.arguments
-    return { toolResult: await handler(input), content: [] };
+    try {
+      const input = request.params.arguments
+      return { toolResult: await handler(input), content: [] };
+    } catch (error) {
+      return { toolResult: { error: (error as Error).message }, content: [], isError: true };
+    }
   }
-  throw new McpError(ErrorCode.MethodNotFound, "Method not found");
+  return { toolResult: { error: "Method not found" }, content: [], isError: true };
 });
