@@ -19,13 +19,13 @@ The MCP server exposes several tools to Claude:
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/shinkai-mcp-helius.git
+   git clone https://github.com/dcSpark/mcp-server-helius.git
    cd shinkai-mcp-helius
    ```
 
 2. Install dependencies:
    ```bash
-   npm install
+   npm ci
    ```
 
 3. Build the project:
