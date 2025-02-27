@@ -1,5 +1,5 @@
 {
-  "name": "shinkai-mcp-helius",
+  "name": "mcp-server-helius",
   "version": "0.1.0",
   "description": "A Model Context Protocol server example",
   "private": true,
