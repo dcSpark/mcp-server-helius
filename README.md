@@ -1,4 +1,4 @@
-# Shinkai MCP Helius
+# MCP Helius
 
 This repository contains a Model Context Protocol (MCP) server that provides Claude with access to Solana blockchain data via the Helius API. The server enables Claude to perform operations like checking wallet balances and getting the current block height on the Solana blockchain.
 
