@@ -16,6 +16,21 @@ export interface HeliusClient {
     getTokenAccountBalance: (tokenAddress: PublicKey, commitment?: Commitment) => Promise<{ value: any }>;
     getSlot: (commitment?: Commitment) => Promise<number>;
     getTransaction: (signature: string, options: { maxSupportedTransactionVersion: number, commitment?: Commitment }) => Promise<any>;
+    
+    // New methods
+    getAccountInfo: (publicKey: PublicKey, commitment?: Commitment) => Promise<any>;
+    getProgramAccounts: (programId: PublicKey, commitment?: Commitment) => Promise<any>;
+    getSignaturesForAddress: (address: PublicKey, options?: { limit?: number, before?: string, until?: string, commitment?: Commitment }) => Promise<any>;
+    getMinimumBalanceForRentExemption: (dataSize: number, commitment?: Commitment) => Promise<number>;
+    getMultipleAccounts: (publicKeys: PublicKey[], commitment?: Commitment) => Promise<any>;
+    getFeeForMessage: (message: string, commitment?: Commitment) => Promise<any>;
+    getInflationReward: (addresses: PublicKey[], epoch?: number, commitment?: Commitment) => Promise<any>;
+    getEpochInfo: (commitment?: Commitment) => Promise<any>;
+    getEpochSchedule: (commitment?: Commitment) => Promise<any>;
+    getLeaderSchedule: (slot?: number, commitment?: Commitment) => Promise<any>;
+    getRecentPerformanceSamples: (limit?: number) => Promise<any>;
+    getVersion: () => Promise<any>;
+    getHealth: () => Promise<string>;
   };
 }
 
@@ -75,6 +90,138 @@ export class MockHeliusClient implements HeliusClient {
         meta: { fee: 5000 },
         transaction: { signatures: [signature] }
       };
+    },
+    
+    // New mock implementations
+    getAccountInfo: async (publicKey: PublicKey) => {
+      return {
+        context: { slot: 123456789 },
+        value: {
+          data: ["base64data", "base64"],
+          executable: false,
+          lamports: 1000000000,
+          owner: "11111111111111111111111111111111",
+          rentEpoch: 123
+        }
+      };
+    },
+    
+    getProgramAccounts: async (programId: PublicKey) => {
+      return [
+        {
+          pubkey: { toString: () => "ProgramAccount1" },
+          account: {
+            data: ["base64data", "base64"],
+            executable: false,
+            lamports: 1000000000,
+            owner: programId.toString(),
+            rentEpoch: 123
+          }
+        },
+        {
+          pubkey: { toString: () => "ProgramAccount2" },
+          account: {
+            data: ["base64data", "base64"],
+            executable: false,
+            lamports: 2000000000,
+            owner: programId.toString(),
+            rentEpoch: 123
+          }
+        }
+      ];
+    },
+    
+    getSignaturesForAddress: async (address: PublicKey, options?: { limit?: number }) => {
+      const limit = options?.limit || 10;
+      return Array(limit).fill(0).map((_, i) => ({
+        signature: `MockSignature${i}`,
+        slot: 123456789 + i,
+        err: null,
+        memo: null,
+        blockTime: Date.now() / 1000
+      }));
+    },
+    
+    getMinimumBalanceForRentExemption: async (dataSize: number) => {
+      return dataSize * 1000; // Mock calculation
+    },
+    
+    getMultipleAccounts: async (publicKeys: PublicKey[]) => {
+      return {
+        context: { slot: 123456789 },
+        value: publicKeys.map((pk, i) => ({
+          data: ["base64data", "base64"],
+          executable: false,
+          lamports: 1000000000 + i,
+          owner: "11111111111111111111111111111111",
+          rentEpoch: 123
+        }))
+      };
+    },
+    
+    getFeeForMessage: async (message: string) => {
+      return {
+        context: { slot: 123456789 },
+        value: 5000
+      };
+    },
+    
+    getInflationReward: async (addresses: PublicKey[], epoch?: number) => {
+      return addresses.map((_, i) => ({
+        epoch: epoch || 123,
+        effectiveSlot: 123456789,
+        amount: 1000000 + i,
+        postBalance: 10000000000 + i,
+        commission: null
+      }));
+    },
+    
+    getEpochInfo: async () => {
+      return {
+        epoch: 123,
+        slotIndex: 456,
+        slotsInEpoch: 432000,
+        absoluteSlot: 123456789,
+        blockHeight: 123456000
+      };
+    },
+    
+    getEpochSchedule: async () => {
+      return {
+        slotsPerEpoch: 432000,
+        leaderScheduleSlotOffset: 432000,
+        warmup: false,
+        firstNormalEpoch: 0,
+        firstNormalSlot: 0
+      };
+    },
+    
+    getLeaderSchedule: async () => {
+      return {
+        "ValidatorPubkey1": [0, 1, 2, 3],
+        "ValidatorPubkey2": [4, 5, 6, 7]
+      };
+    },
+    
+    getRecentPerformanceSamples: async (limit?: number) => {
+      const count = limit || 10;
+      return Array(count).fill(0).map((_, i) => ({
+        slot: 123456789 - i * 100,
+        numTransactions: 1000 + i,
+        numSlots: 1,
+        samplePeriodSecs: 60
+      }));
+    },
+    
+    getVersion: async () => {
+      return {
+        "solana-core": "1.14.0",
+        "feature-set": 123456789
+      };
+    },
+    
+    getHealth: async () => {
+      return "ok";
     }
   };
 } 

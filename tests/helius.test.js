@@ -31,7 +31,20 @@ import {
   getLatestBlockhashHandler,
   getTokenAccountBalanceHandler,
   getSlotHandler,
-  getTransactionHandler
+  getTransactionHandler,
+  getAccountInfoHandler,
+  getProgramAccountsHandler,
+  getSignaturesForAddressHandler,
+  getMinimumBalanceForRentExemptionHandler,
+  getMultipleAccountsHandler,
+  getFeeForMessageHandler,
+  getInflationRewardHandler,
+  getEpochInfoHandler,
+  getEpochScheduleHandler,
+  getLeaderScheduleHandler,
+  getRecentPerformanceSamplesHandler,
+  getVersionHandler,
+  getHealthHandler
 } from '../build/handlers/helius.js';
 
 // Valid Solana addresses for testing
@@ -39,6 +52,7 @@ const VALID_PUBLIC_KEY = 'GsbwXfJraMomNxBcjK7xK2xQx5MQgQx8Kb71Wkgwq1Bi';
 const VALID_TOKEN_ADDRESS = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'; // USDC
 const VALID_PROGRAM_ID = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'; // Token Program
 const VALID_SIGNATURE = '5UfDuX94A1QfqkQvg5WBvM7V13qZXY4WGhTBNfJNZHJGHyQM5RzXYfnMKRqQ9NJ5BwJv2ZqY3C9KYQTnDr4QJwV1';
+const VALID_MESSAGE = 'AQABAgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQAA';
 
 describe('Helius Handlers Tests', () => {
   describe('getBalanceHandler', () => {
@@ -156,6 +170,156 @@ describe('Helius Handlers Tests', () => {
       const result = await getTransactionHandler({ signature: 'non-existent-signature' });
       assert.strictEqual(result.isError, true);
       assert.strictEqual(result.content[0].text.includes('Transaction not found'), true);
+    });
+  });
+
+  // New tests for additional Helius RPC methods
+  describe('getAccountInfoHandler', () => {
+    test('should return account info for valid public key', async () => {
+      const result = await getAccountInfoHandler({ publicKey: VALID_PUBLIC_KEY });
+      assert.strictEqual(result.content[0].type, 'text');
+      assert.strictEqual(result.isError, false);
+      assert.strictEqual(result.content[0].text.includes('Account info:'), true);
+    });
+
+    test('should return error for invalid public key', async () => {
+      const result = await getAccountInfoHandler({ publicKey: 'invalid-public-key' });
+      assert.strictEqual(result.isError, true);
+      assert.strictEqual(result.content[0].text.includes('Invalid public key'), true);
+    });
+  });
+
+  describe('getProgramAccountsHandler', () => {
+    test('should return program accounts for valid program ID', async () => {
+      const result = await getProgramAccountsHandler({ programId: VALID_PROGRAM_ID });
+      assert.strictEqual(result.content[0].type, 'text');
+      assert.strictEqual(result.isError, false);
+      assert.strictEqual(result.content[0].text.includes('Program accounts:'), true);
+    });
+
+    test('should return error for invalid program ID', async () => {
+      const result = await getProgramAccountsHandler({ programId: 'invalid-program-id' });
+      assert.strictEqual(result.isError, true);
+      assert.strictEqual(result.content[0].text.includes('Invalid public key'), true);
+    });
+  });
+
+  describe('getSignaturesForAddressHandler', () => {
+    test('should return signatures for valid address', async () => {
+      const result = await getSignaturesForAddressHandler({ address: VALID_PUBLIC_KEY });
+      assert.strictEqual(result.content[0].type, 'text');
+      assert.strictEqual(result.isError, false);
+      assert.strictEqual(result.content[0].text.includes('Signatures:'), true);
+    });
+
+    test('should return error for invalid address', async () => {
+      const result = await getSignaturesForAddressHandler({ address: 'invalid-public-key' });
+      assert.strictEqual(result.isError, true);
+      assert.strictEqual(result.content[0].text.includes('Invalid public key'), true);
+    });
+  });
+
+  describe('getMinimumBalanceForRentExemptionHandler', () => {
+    test('should return minimum balance for rent exemption', async () => {
+      const result = await getMinimumBalanceForRentExemptionHandler({ dataSize: 100 });
+      assert.strictEqual(result.content[0].type, 'text');
+      assert.strictEqual(result.isError, false);
+      assert.strictEqual(result.content[0].text.includes('Minimum balance for rent exemption:'), true);
+    });
+  });
+
+  describe('getMultipleAccountsHandler', () => {
+    test('should return multiple accounts for valid public keys', async () => {
+      const result = await getMultipleAccountsHandler({ publicKeys: [VALID_PUBLIC_KEY, VALID_PUBLIC_KEY] });
+      assert.strictEqual(result.content[0].type, 'text');
+      assert.strictEqual(result.isError, false);
+      assert.strictEqual(result.content[0].text.includes('Multiple accounts:'), true);
+    });
+
+    test('should return error for invalid public keys', async () => {
+      const result = await getMultipleAccountsHandler({ publicKeys: [VALID_PUBLIC_KEY, 'invalid-public-key'] });
+      assert.strictEqual(result.isError, true);
+      assert.strictEqual(result.content[0].type, 'text');
+      assert.strictEqual(result.content[0].text.includes('Invalid public key'), true);
+    });
+  });
+
+  describe('getFeeForMessageHandler', () => {
+    test('should return fee for message', async () => {
+      const result = await getFeeForMessageHandler({ message: VALID_MESSAGE });
+      assert.strictEqual(result.content[0].type, 'text');
+      assert.strictEqual(result.isError, false);
+      assert.strictEqual(result.content[0].text.includes('Fee for message:'), true);
+    });
+  });
+
+  describe('getInflationRewardHandler', () => {
+    test('should return inflation rewards for valid addresses', async () => {
+      const result = await getInflationRewardHandler({ addresses: [VALID_PUBLIC_KEY] });
+      assert.strictEqual(result.content[0].type, 'text');
+      assert.strictEqual(result.isError, false);
+      assert.strictEqual(result.content[0].text.includes('Inflation rewards:'), true);
+    });
+
+    test('should return error for invalid addresses', async () => {
+      const result = await getInflationRewardHandler({ addresses: ['invalid-public-key'] });
+      assert.strictEqual(result.isError, true);
+      assert.strictEqual(result.content[0].type, 'text');
+      assert.strictEqual(result.content[0].text.includes('Invalid public key'), true);
+    });
+  });
+
+  describe('getEpochInfoHandler', () => {
+    test('should return epoch info', async () => {
+      const result = await getEpochInfoHandler({});
+      assert.strictEqual(result.content[0].type, 'text');
+      assert.strictEqual(result.isError, false);
+      assert.strictEqual(result.content[0].text.includes('Epoch info:'), true);
+    });
+  });
+
+  describe('getEpochScheduleHandler', () => {
+    test('should return epoch schedule', async () => {
+      const result = await getEpochScheduleHandler({});
+      assert.strictEqual(result.content[0].type, 'text');
+      assert.strictEqual(result.isError, false);
+      assert.strictEqual(result.content[0].text.includes('Epoch schedule:'), true);
+    });
+  });
+
+  describe('getLeaderScheduleHandler', () => {
+    test('should return leader schedule', async () => {
+      const result = await getLeaderScheduleHandler({});
+      assert.strictEqual(result.content[0].type, 'text');
+      assert.strictEqual(result.isError, false);
+      assert.strictEqual(result.content[0].text.includes('Leader schedule:'), true);
+    });
+  });
+
+  describe('getRecentPerformanceSamplesHandler', () => {
+    test('should return recent performance samples', async () => {
+      const result = await getRecentPerformanceSamplesHandler({});
+      assert.strictEqual(result.content[0].type, 'text');
+      assert.strictEqual(result.isError, false);
+      assert.strictEqual(result.content[0].text.includes('Recent performance samples:'), true);
+    });
+  });
+
+  describe('getVersionHandler', () => {
+    test('should return version', async () => {
+      const result = await getVersionHandler({});
+      assert.strictEqual(result.content[0].type, 'text');
+      assert.strictEqual(result.isError, false);
+      assert.strictEqual(result.content[0].text.includes('Version:'), true);
+    });
+  });
+
+  describe('getHealthHandler', () => {
+    test('should return health', async () => {
+      const result = await getHealthHandler({});
+      assert.strictEqual(result.content[0].type, 'text');
+      assert.strictEqual(result.isError, false);
+      assert.strictEqual(result.content[0].text.includes('Health:'), true);
     });
   });
 }); 

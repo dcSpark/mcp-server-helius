@@ -7,7 +7,20 @@ import {
   getLatestBlockhashHandler,
   getTokenAccountBalanceHandler,
   getSlotHandler,
-  getTransactionHandler
+  getTransactionHandler,
+  getAccountInfoHandler,
+  getProgramAccountsHandler,
+  getSignaturesForAddressHandler,
+  getMinimumBalanceForRentExemptionHandler,
+  getMultipleAccountsHandler,
+  getFeeForMessageHandler,
+  getInflationRewardHandler,
+  getEpochInfoHandler,
+  getEpochScheduleHandler,
+  getLeaderScheduleHandler,
+  getRecentPerformanceSamplesHandler,
+  getVersionHandler,
+  getHealthHandler
 } from "./handlers/helius.js";
 
 export const tools = [
@@ -21,13 +34,6 @@ export const tools = [
         commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
       },
       required: ["publicKey"]
-    },
-    outputSchema: {
-      type: "object",
-      properties: {
-        balance: { type: "number" }
-      },
-      required: ["balance"]
     }
   },
   {
@@ -39,13 +45,6 @@ export const tools = [
         commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
       },
       required: []
-    },
-    outputSchema: {
-      type: "object",
-      properties: {
-        blockHeight: { type: "number" }
-      },
-      required: ["blockHeight"]
     }
   },
   {
@@ -58,34 +57,6 @@ export const tools = [
         programId: { type: "string" }
       },
       required: ["publicKey", "programId"]
-    },
-    outputSchema: {
-      type: "object",
-      properties: {
-        tokenAccounts: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              address: { type: "string" },
-              amount: { type: "number" },
-              mint: { type: "string" },
-              owner: { type: "string" },
-              programId: { type: "string" },
-              uiTokenAmount: {
-                type: "object",
-                properties: {
-                  amount: { type: "string" },
-                  decimals: { type: "number" },
-                  uiAmount: { type: "number" },
-                  uiAmountString: { type: "string" }
-                }
-              }
-            }
-          }
-        }
-      },
-      required: ["tokenAccounts"]
     }
   },
   {
@@ -97,13 +68,6 @@ export const tools = [
         tokenAddress: { type: "string" }
       },
       required: ["tokenAddress"]
-    },
-    outputSchema: {
-      type: "object",
-      properties: {
-        tokenSupply: { type: "number" }
-      },
-      required: ["tokenSupply"]
     }
   },
   {
@@ -115,14 +79,6 @@ export const tools = [
         commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
       },
       required: []
-    },
-    outputSchema: {
-      type: "object",
-      properties: {
-        blockhash: { type: "string" },
-        lastValidBlockHeight: { type: "number" }
-      },
-      required: ["blockhash", "lastValidBlockHeight"]
     }
   },
   {
@@ -135,16 +91,6 @@ export const tools = [
         commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
       },
       required: ["tokenAddress"]
-    },
-    outputSchema: {
-      type: "object",
-      properties: {
-        amount: { type: "string" },
-        decimals: { type: "number" },
-        uiAmount: { type: "number" },
-        uiAmountString: { type: "string" }
-      },
-      required: ["amount", "decimals", "uiAmount", "uiAmountString"]
     }
   },
   {
@@ -156,13 +102,6 @@ export const tools = [
         commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
       },
       required: []
-    },
-    outputSchema: {
-      type: "object",
-      properties: {
-        slot: { type: "number" }
-      },
-      required: ["slot"]
     }
   },
   {
@@ -175,13 +114,164 @@ export const tools = [
         commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
       },
       required: ["signature"]
-    },
-    outputSchema: {
+    }
+  },
+  // New tools
+  {
+    name: "helius_get_account_info",
+    description: "Get account information for a Solana address",
+    inputSchema: {
       type: "object",
       properties: {
-        transaction: { type: "object" }
+        publicKey: { type: "string" },
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
       },
-      required: ["transaction"]
+      required: ["publicKey"]
+    }
+  },
+  {
+    name: "helius_get_program_accounts",
+    description: "Get all accounts owned by a program",
+    inputSchema: {
+      type: "object",
+      properties: {
+        programId: { type: "string" },
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: ["programId"]
+    }
+  },
+  {
+    name: "helius_get_signatures_for_address",
+    description: "Get transaction signatures for a Solana address",
+    inputSchema: {
+      type: "object",
+      properties: {
+        address: { type: "string" },
+        limit: { type: "number" },
+        before: { type: "string" },
+        until: { type: "string" },
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: ["address"]
+    }
+  },
+  {
+    name: "helius_get_minimum_balance_for_rent_exemption",
+    description: "Get the minimum balance required for rent exemption",
+    inputSchema: {
+      type: "object",
+      properties: {
+        dataSize: { type: "number" },
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: ["dataSize"]
+    }
+  },
+  {
+    name: "helius_get_multiple_accounts",
+    description: "Get information about multiple Solana accounts",
+    inputSchema: {
+      type: "object",
+      properties: {
+        publicKeys: { 
+          type: "array",
+          items: { type: "string" }
+        },
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: ["publicKeys"]
+    }
+  },
+  {
+    name: "helius_get_fee_for_message",
+    description: "Get the fee for a message",
+    inputSchema: {
+      type: "object",
+      properties: {
+        message: { type: "string" },
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: ["message"]
+    }
+  },
+  {
+    name: "helius_get_inflation_reward",
+    description: "Get inflation rewards for a list of addresses",
+    inputSchema: {
+      type: "object",
+      properties: {
+        addresses: { 
+          type: "array",
+          items: { type: "string" }
+        },
+        epoch: { type: "number" },
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: ["addresses"]
+    }
+  },
+  {
+    name: "helius_get_epoch_info",
+    description: "Get information about the current epoch",
+    inputSchema: {
+      type: "object",
+      properties: {
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: []
+    }
+  },
+  {
+    name: "helius_get_epoch_schedule",
+    description: "Get the epoch schedule",
+    inputSchema: {
+      type: "object",
+      properties: {
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: []
+    }
+  },
+  {
+    name: "helius_get_leader_schedule",
+    description: "Get the leader schedule for an epoch",
+    inputSchema: {
+      type: "object",
+      properties: {
+        slot: { type: "number" },
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: []
+    }
+  },
+  {
+    name: "helius_get_recent_performance_samples",
+    description: "Get recent performance samples",
+    inputSchema: {
+      type: "object",
+      properties: {
+        limit: { type: "number" }
+      },
+      required: []
+    }
+  },
+  {
+    name: "helius_get_version",
+    description: "Get the version of the Solana node",
+    inputSchema: {
+      type: "object",
+      properties: {},
+      required: []
+    }
+  },
+  {
+    name: "helius_get_health",
+    description: "Get the health of the Solana node",
+    inputSchema: {
+      type: "object",
+      properties: {},
+      required: []
     }
   }
   /*
@@ -210,6 +300,20 @@ export const handlers: handlerDictionary = {
   "helius_get_latest_blockhash": getLatestBlockhashHandler,
   "helius_get_token_account_balance": getTokenAccountBalanceHandler,
   "helius_get_slot": getSlotHandler,
-  "helius_get_transaction": getTransactionHandler
+  "helius_get_transaction": getTransactionHandler,
+  // New handlers
+  "helius_get_account_info": getAccountInfoHandler,
+  "helius_get_program_accounts": getProgramAccountsHandler,
+  "helius_get_signatures_for_address": getSignaturesForAddressHandler,
+  "helius_get_minimum_balance_for_rent_exemption": getMinimumBalanceForRentExemptionHandler,
+  "helius_get_multiple_accounts": getMultipleAccountsHandler,
+  "helius_get_fee_for_message": getFeeForMessageHandler,
+  "helius_get_inflation_reward": getInflationRewardHandler,
+  "helius_get_epoch_info": getEpochInfoHandler,
+  "helius_get_epoch_schedule": getEpochScheduleHandler,
+  "helius_get_leader_schedule": getLeaderScheduleHandler,
+  "helius_get_recent_performance_samples": getRecentPerformanceSamplesHandler,
+  "helius_get_version": getVersionHandler,
+  "helius_get_health": getHealthHandler
   // "print_environment": printEnvironmentHandler,
 }
