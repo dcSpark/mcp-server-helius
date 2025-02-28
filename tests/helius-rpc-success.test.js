@@ -1,0 +1,342 @@
+import { test, describe } from 'node:test';
+import assert from 'node:assert';
+import { PublicKey } from '@solana/web3.js';
+
+// Set environment variables for testing
+process.env.HELIUS_API_KEY = 'test-api-key';
+process.env.TEST_MODE = 'true';
+
+// Import the handlers
+import { 
+  // DAS Methods
+  getAssetHandler,
+  getRwaAssetHandler,
+  getAssetBatchHandler,
+  getAssetProofHandler,
+  getAssetsByGroupHandler,
+  getAssetsByOwnerHandler,
+  getAssetsByCreatorHandler,
+  getAssetsByAuthorityHandler,
+  searchAssetsHandler,
+  getSignaturesForAssetHandler,
+  getNftEditionsHandler,
+  getTokenAccountsHandler,
+  
+  // Transaction and Fee Methods
+  getPriorityFeeEstimateHandler,
+  getComputeUnitsHandler,
+  pollTransactionConfirmationHandler,
+  createSmartTransactionHandler,
+  sendSmartTransactionHandler,
+  addTipInstructionHandler,
+  createSmartTransactionWithTipHandler,
+  sendJitoBundleHandler,
+  getBundleStatusesHandler,
+  sendSmartTransactionWithTipHandler,
+  sendTransactionHandler,
+  executeJupiterSwapHandler
+} from '../build/handlers/helius.js';
+
+// Valid test values
+const VALID_PUBLIC_KEY = 'GsbwXfJraMomNxBcjK7xK2xQx5MQgQx8Kb71Wkgwq1Bi';
+const VALID_ASSET_ID = 'AssetR1cUu5tNubCzitKAoEKLCKmRjWxWZTp32JzNrNsA';
+const VALID_TRANSACTION = 'AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAEDAQZzb2xhbmEBAgEEAQICAQwCAAAAAODjOwAAAAAA';
+const VALID_INSTRUCTION = 'AgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAQMBBnNvbGFuYQECBQECAgEMAgAAAADg4zsAAAAAAA==';
+
+describe('Helius RPC Handlers Success Tests', () => {
+  // DAS Methods Tests
+  describe('getAssetHandler', () => {
+    test('should return asset details', async () => {
+      const result = await getAssetHandler({ id: VALID_ASSET_ID });
+      assert.strictEqual(result.isError, false);
+      
+      const content = JSON.parse(result.content[0].text.replace('Asset details: ', ''));
+      assert.ok(content.id);
+      assert.ok(content.content);
+    });
+  });
+
+  describe('getRwaAssetHandler', () => {
+    test('should return RWA asset details', async () => {
+      const result = await getRwaAssetHandler({ id: VALID_ASSET_ID });
+      assert.strictEqual(result.isError, false);
+      
+      const content = JSON.parse(result.content[0].text.replace('RWA Asset details: ', ''));
+      assert.ok(content.id);
+    });
+  });
+
+  describe('getAssetBatchHandler', () => {
+    test('should return asset batch details', async () => {
+      const result = await getAssetBatchHandler({ ids: [VALID_ASSET_ID, VALID_ASSET_ID] });
+      assert.strictEqual(result.isError, false);
+      
+      const content = JSON.parse(result.content[0].text.replace('Asset batch details: ', ''));
+      assert.ok(Array.isArray(content));
+      assert.ok(content.length > 0);
+    });
+  });
+
+  describe('getAssetProofHandler', () => {
+    test('should return asset proof', async () => {
+      const result = await getAssetProofHandler({ id: VALID_ASSET_ID });
+      assert.strictEqual(result.isError, false);
+      
+      const content = JSON.parse(result.content[0].text.replace('Asset proof: ', ''));
+      assert.ok(content.root);
+      assert.ok(content.proof);
+    });
+  });
+
+  describe('getAssetsByGroupHandler', () => {
+    test('should return assets by group', async () => {
+      const result = await getAssetsByGroupHandler({ 
+        groupKey: 'collection', 
+        groupValue: 'VALID_COLLECTION_ID' 
+      });
+      assert.strictEqual(result.isError, false);
+      
+      const content = JSON.parse(result.content[0].text.replace('Assets by group: ', ''));
+      assert.ok(content.items);
+      assert.ok(Array.isArray(content.items));
+    });
+  });
+
+  describe('getAssetsByOwnerHandler', () => {
+    test('should return assets by owner', async () => {
+      const result = await getAssetsByOwnerHandler({ owner: VALID_PUBLIC_KEY });
+      assert.strictEqual(result.isError, false);
+      
+      const content = JSON.parse(result.content[0].text.replace('Assets by owner: ', ''));
+      assert.ok(content.items);
+      assert.ok(Array.isArray(content.items));
+    });
+  });
+
+  describe('getAssetsByCreatorHandler', () => {
+    test('should return assets by creator', async () => {
+      const result = await getAssetsByCreatorHandler({ creator: VALID_PUBLIC_KEY });
+      assert.strictEqual(result.isError, false);
+      
+      const content = JSON.parse(result.content[0].text.replace('Assets by creator: ', ''));
+      assert.ok(content.items);
+      assert.ok(Array.isArray(content.items));
+    });
+  });
+
+  describe('getAssetsByAuthorityHandler', () => {
+    test('should return assets by authority', async () => {
+      const result = await getAssetsByAuthorityHandler({ authority: VALID_PUBLIC_KEY });
+      assert.strictEqual(result.isError, false);
+      
+      const content = JSON.parse(result.content[0].text.replace('Assets by authority: ', ''));
+      assert.ok(content.items);
+      assert.ok(Array.isArray(content.items));
+    });
+  });
+
+  describe('searchAssetsHandler', () => {
+    test('should return search results', async () => {
+      const result = await searchAssetsHandler({ query: 'test query' });
+      assert.strictEqual(result.isError, false);
+      
+      const content = JSON.parse(result.content[0].text.replace('Search results: ', ''));
+      assert.ok(content.items);
+      assert.ok(Array.isArray(content.items));
+    });
+  });
+
+  describe('getSignaturesForAssetHandler', () => {
+    test('should return signatures for asset', async () => {
+      const result = await getSignaturesForAssetHandler({ id: VALID_ASSET_ID });
+      assert.strictEqual(result.isError, false);
+      
+      const content = JSON.parse(result.content[0].text.replace('Signatures for asset: ', ''));
+      assert.ok(content.items);
+      assert.ok(Array.isArray(content.items));
+    });
+  });
+
+  describe('getNftEditionsHandler', () => {
+    test('should return NFT editions', async () => {
+      const result = await getNftEditionsHandler({ masterEditionId: VALID_ASSET_ID });
+      assert.strictEqual(result.isError, false);
+      
+      const content = JSON.parse(result.content[0].text.replace('NFT editions: ', ''));
+      assert.ok(content.items);
+      assert.ok(Array.isArray(content.items));
+    });
+  });
+
+  describe('getTokenAccountsHandler', () => {
+    test('should return token accounts by mint', async () => {
+      const result = await getTokenAccountsHandler({ mint: VALID_PUBLIC_KEY });
+      assert.strictEqual(result.isError, false);
+      
+      const content = JSON.parse(result.content[0].text.replace('Token accounts: ', ''));
+      assert.ok(content.items);
+      assert.ok(Array.isArray(content.items));
+    });
+
+    test('should return token accounts by owner', async () => {
+      const result = await getTokenAccountsHandler({ owner: VALID_PUBLIC_KEY });
+      assert.strictEqual(result.isError, false);
+      
+      const content = JSON.parse(result.content[0].text.replace('Token accounts: ', ''));
+      assert.ok(content.items);
+      assert.ok(Array.isArray(content.items));
+    });
+  });
+
+  // Transaction and Fee Methods Tests
+  describe('getPriorityFeeEstimateHandler', () => {
+    test('should return priority fee estimate', async () => {
+      const result = await getPriorityFeeEstimateHandler({ 
+        accountKeys: [VALID_PUBLIC_KEY],
+        options: { priorityLevel: 'high' }
+      });
+      assert.strictEqual(result.isError, false);
+      
+      const content = JSON.parse(result.content[0].text.replace('Priority fee estimate: ', ''));
+      assert.ok(content.priorityFeeEstimate !== undefined);
+    });
+  });
+
+  describe('getComputeUnitsHandler', () => {
+    test('should return compute units', async () => {
+      const result = await getComputeUnitsHandler({ 
+        instructions: [VALID_INSTRUCTION], 
+        payer: VALID_PUBLIC_KEY 
+      });
+      assert.strictEqual(result.isError, false);
+      assert.ok(result.content[0].text.includes('Compute units:'));
+    });
+  });
+
+  describe('pollTransactionConfirmationHandler', () => {
+    test('should return transaction status', async () => {
+      const result = await pollTransactionConfirmationHandler({ 
+        signature: 'valid-signature',
+        timeout: 5000,
+        interval: 1000
+      });
+      assert.strictEqual(result.isError, false);
+      assert.ok(result.content[0].text.includes('Transaction status:'));
+    });
+  });
+
+  describe('createSmartTransactionHandler', () => {
+    test('should create smart transaction', async () => {
+      const result = await createSmartTransactionHandler({ 
+        instructions: [VALID_INSTRUCTION],
+        signers: [VALID_PUBLIC_KEY]
+      });
+      assert.strictEqual(result.isError, false);
+      
+      const content = JSON.parse(result.content[0].text.replace('Smart transaction created: ', ''));
+      assert.ok(content);
+    });
+  });
+
+  describe('sendSmartTransactionHandler', () => {
+    test('should send smart transaction', async () => {
+      const result = await sendSmartTransactionHandler({ 
+        instructions: [VALID_INSTRUCTION],
+        signers: [VALID_PUBLIC_KEY]
+      });
+      assert.strictEqual(result.isError, false);
+      assert.ok(result.content[0].text.includes('Smart transaction sent:'));
+    });
+  });
+
+  describe('addTipInstructionHandler', () => {
+    test('should add tip instruction', async () => {
+      const result = await addTipInstructionHandler({ 
+        instructions: [VALID_INSTRUCTION],
+        feePayer: VALID_PUBLIC_KEY,
+        tipAccount: VALID_PUBLIC_KEY,
+        tipAmount: 1000000
+      });
+      assert.strictEqual(result.isError, false);
+      assert.strictEqual(result.content[0].text, 'Tip instruction added successfully');
+    });
+  });
+
+  describe('createSmartTransactionWithTipHandler', () => {
+    test('should create smart transaction with tip', async () => {
+      const result = await createSmartTransactionWithTipHandler({ 
+        instructions: [VALID_INSTRUCTION],
+        signers: [VALID_PUBLIC_KEY],
+        tipAmount: 1000000
+      });
+      assert.strictEqual(result.isError, false);
+      
+      const content = JSON.parse(result.content[0].text.replace('Smart transaction with tip created: ', ''));
+      assert.ok(content);
+    });
+  });
+
+  describe('sendJitoBundleHandler', () => {
+    test('should send Jito bundle', async () => {
+      const result = await sendJitoBundleHandler({ 
+        serializedTransactions: [VALID_TRANSACTION],
+        jitoApiUrl: 'https://jito-api.example.com'
+      });
+      assert.strictEqual(result.isError, false);
+      assert.ok(result.content[0].text.includes('Jito bundle sent:'));
+    });
+  });
+
+  describe('getBundleStatusesHandler', () => {
+    test('should get bundle statuses', async () => {
+      const result = await getBundleStatusesHandler({ 
+        bundleIds: ['bundle-id-1', 'bundle-id-2'],
+        jitoApiUrl: 'https://jito-api.example.com'
+      });
+      assert.strictEqual(result.isError, false);
+      
+      const content = JSON.parse(result.content[0].text.replace('Bundle statuses: ', ''));
+      assert.ok(Array.isArray(content));
+    });
+  });
+
+  describe('sendSmartTransactionWithTipHandler', () => {
+    test('should send smart transaction with tip', async () => {
+      const result = await sendSmartTransactionWithTipHandler({ 
+        instructions: [VALID_INSTRUCTION],
+        signers: [VALID_PUBLIC_KEY],
+        tipAmount: 1000000,
+        region: 'us-east-1'
+      });
+      assert.strictEqual(result.isError, false);
+      assert.ok(result.content[0].text.includes('Smart transaction with tip sent:'));
+    });
+  });
+
+  describe('sendTransactionHandler', () => {
+    test('should send transaction', async () => {
+      const result = await sendTransactionHandler({ 
+        transaction: VALID_TRANSACTION,
+        options: { skipPreflight: false, maxRetries: 3 }
+      });
+      assert.strictEqual(result.isError, false);
+      assert.ok(result.content[0].text.includes('Transaction sent:'));
+    });
+  });
+
+  describe('executeJupiterSwapHandler', () => {
+    test('should execute Jupiter swap', async () => {
+      const result = await executeJupiterSwapHandler({ 
+        inputMint: VALID_PUBLIC_KEY,
+        outputMint: VALID_PUBLIC_KEY,
+        amount: 1000000,
+        maxDynamicSlippageBps: 100,
+        signer: VALID_PUBLIC_KEY
+      });
+      assert.strictEqual(result.isError, false);
+      
+      const content = JSON.parse(result.content[0].text.replace('Jupiter swap executed: ', ''));
+      assert.ok(content);
+    });
+  });
+}); 
