@@ -1,11 +1,18 @@
 {
-  "name": "mcp-server-helius",
-  "version": "0.1.0",
+  "name": "@dcspark/mcp-server-helius",
+  "version": "0.1.2",
   "description": "A Model Context Protocol server example",
-  "private": true,
+  "license": "MIT",
+  "author": "DC Spark <hello@dcspark.io>",
+  "bugs": "https://github.com/dcspark/mcp-server-helius/issues",
+  "homepage": "https://github.com/dcspark/mcp-server-helius",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dcspark/mcp-server-helius.git"
+  },
   "type": "module",
   "bin": {
-    "mcp-server": "./build/index.js"
+    "mcp-server-helius": "build/index.js"
   },
   "files": [
     "build"
@@ -20,12 +27,12 @@
     "test": "npm run build && TEST_MODE=true node --test tests/*.test.js"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "0.6.0",
+    "@modelcontextprotocol/sdk": "^1.6.1",
     "helius-sdk": "^1.4.2"
   },
   "devDependencies": {
     "@types/node": "^20.11.24",
-    "tsx": "^4.7.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.8.2",
+    "tsx": "^4.7.0"
   }
 }
