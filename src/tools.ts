@@ -1,3 +1,4 @@
+import * as helius from './handlers/helius.js';
 // import { printEnvironmentHandler } from "./handlers/environment.js";
 import { 
   getBalanceHandler, 
@@ -273,6 +274,354 @@ export const tools = [
       properties: {},
       required: []
     }
+  },
+  // DAS Methods
+  {
+    name: 'helius_get_asset',
+    description: 'Get details of a digital asset by its ID',
+    handler: helius.getAssetHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' }
+      },
+      required: ['id']
+    }
+  },
+  {
+    name: 'helius_get_rwa_asset',
+    description: 'Get details of a real-world asset by its ID',
+    handler: helius.getRwaAssetHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' }
+      },
+      required: ['id']
+    }
+  },
+  {
+    name: 'helius_get_asset_batch',
+    description: 'Get details of multiple assets by their IDs',
+    handler: helius.getAssetBatchHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        ids: { type: 'array', items: { type: 'string' } }
+      },
+      required: ['ids']
+    }
+  },
+  {
+    name: 'helius_get_asset_proof',
+    description: 'Get proof for a digital asset',
+    handler: helius.getAssetProofHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' }
+      },
+      required: ['id']
+    }
+  },
+  {
+    name: 'helius_get_assets_by_group',
+    description: 'Get assets by group key and value',
+    handler: helius.getAssetsByGroupHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupKey: { type: 'string' },
+        groupValue: { type: 'string' },
+        page: { type: 'number' },
+        limit: { type: 'number' }
+      },
+      required: ['groupKey', 'groupValue']
+    }
+  },
+  {
+    name: 'helius_get_assets_by_owner',
+    description: 'Get assets owned by a specific address',
+    handler: helius.getAssetsByOwnerHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        owner: { type: 'string' },
+        page: { type: 'number' },
+        limit: { type: 'number' }
+      },
+      required: ['owner']
+    }
+  },
+  {
+    name: 'helius_get_assets_by_creator',
+    description: 'Get assets created by a specific address',
+    handler: helius.getAssetsByCreatorHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        creator: { type: 'string' },
+        page: { type: 'number' },
+        limit: { type: 'number' }
+      },
+      required: ['creator']
+    }
+  },
+  {
+    name: 'helius_get_assets_by_authority',
+    description: 'Get assets by authority address',
+    handler: helius.getAssetsByAuthorityHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        authority: { type: 'string' },
+        page: { type: 'number' },
+        limit: { type: 'number' }
+      },
+      required: ['authority']
+    }
+  },
+  {
+    name: 'helius_search_assets',
+    description: 'Search for assets using a query string',
+    handler: helius.searchAssetsHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        query: { type: 'string' },
+        page: { type: 'number' },
+        limit: { type: 'number' }
+      },
+      required: ['query']
+    }
+  },
+  {
+    name: 'helius_get_signatures_for_asset',
+    description: 'Get signatures associated with an asset',
+    handler: helius.getSignaturesForAssetHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+        page: { type: 'number' },
+        limit: { type: 'number' }
+      },
+      required: ['id']
+    }
+  },
+  {
+    name: 'helius_get_nft_editions',
+    description: 'Get NFT editions for a master edition',
+    handler: helius.getNftEditionsHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        masterEditionId: { type: 'string' },
+        page: { type: 'number' },
+        limit: { type: 'number' }
+      },
+      required: ['masterEditionId']
+    }
+  },
+  {
+    name: 'helius_get_token_accounts',
+    description: 'Get token accounts by mint or owner',
+    handler: helius.getTokenAccountsHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        mint: { type: 'string' },
+        owner: { type: 'string' },
+        page: { type: 'number' },
+        limit: { type: 'number' }
+      }
+    }
+  },
+  // Transaction and Fee Methods
+  {
+    name: 'helius_get_priority_fee_estimate',
+    description: 'Get priority fee estimate for a transaction',
+    handler: helius.getPriorityFeeEstimateHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        accountKeys: { type: 'array', items: { type: 'string' } },
+        options: {
+          type: 'object',
+          properties: {
+            priorityLevel: { type: 'string', enum: ['default', 'high', 'max'] },
+            includeAllPriorityFeeLevels: { type: 'boolean' }
+          }
+        }
+      }
+    }
+  },
+  {
+    name: 'helius_get_compute_units',
+    description: 'Get compute units required for instructions',
+    handler: helius.getComputeUnitsHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        instructions: { type: 'array', items: { type: 'string' } },
+        payer: { type: 'string' },
+        lookupTables: { type: 'array', items: { type: 'string' } }
+      },
+      required: ['instructions', 'payer']
+    }
+  },
+  {
+    name: 'helius_poll_transaction_confirmation',
+    description: 'Poll for transaction confirmation status',
+    handler: helius.pollTransactionConfirmationHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        signature: { type: 'string' },
+        timeout: { type: 'number' },
+        interval: { type: 'number' }
+      },
+      required: ['signature']
+    }
+  },
+  {
+    name: 'helius_create_smart_transaction',
+    description: 'Create a smart transaction',
+    handler: helius.createSmartTransactionHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        instructions: { type: 'array', items: { type: 'string' } },
+        signers: { type: 'array', items: { type: 'string' } },
+        lookupTables: { type: 'array', items: { type: 'string' } },
+        options: { type: 'object' }
+      },
+      required: ['instructions', 'signers']
+    }
+  },
+  {
+    name: 'helius_send_smart_transaction',
+    description: 'Send a smart transaction',
+    handler: helius.sendSmartTransactionHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        instructions: { type: 'array', items: { type: 'string' } },
+        signers: { type: 'array', items: { type: 'string' } },
+        lookupTables: { type: 'array', items: { type: 'string' } },
+        options: { type: 'object' }
+      },
+      required: ['instructions', 'signers']
+    }
+  },
+  {
+    name: 'helius_add_tip_instruction',
+    description: 'Add a tip instruction to a transaction',
+    handler: helius.addTipInstructionHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        instructions: { type: 'array', items: { type: 'string' } },
+        feePayer: { type: 'string' },
+        tipAccount: { type: 'string' },
+        tipAmount: { type: 'number' }
+      },
+      required: ['instructions', 'feePayer', 'tipAccount', 'tipAmount']
+    }
+  },
+  {
+    name: 'helius_create_smart_transaction_with_tip',
+    description: 'Create a smart transaction with tip',
+    handler: helius.createSmartTransactionWithTipHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        instructions: { type: 'array', items: { type: 'string' } },
+        signers: { type: 'array', items: { type: 'string' } },
+        lookupTables: { type: 'array', items: { type: 'string' } },
+        tipAmount: { type: 'number' },
+        options: { type: 'object' }
+      },
+      required: ['instructions', 'signers']
+    }
+  },
+  {
+    name: 'helius_send_jito_bundle',
+    description: 'Send a bundle of transactions to Jito',
+    handler: helius.sendJitoBundleHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        serializedTransactions: { type: 'array', items: { type: 'string' } },
+        jitoApiUrl: { type: 'string' }
+      },
+      required: ['serializedTransactions', 'jitoApiUrl']
+    }
+  },
+  {
+    name: 'helius_get_bundle_statuses',
+    description: 'Get statuses of Jito bundles',
+    handler: helius.getBundleStatusesHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        bundleIds: { type: 'array', items: { type: 'string' } },
+        jitoApiUrl: { type: 'string' }
+      },
+      required: ['bundleIds', 'jitoApiUrl']
+    }
+  },
+  {
+    name: 'helius_send_smart_transaction_with_tip',
+    description: 'Send a smart transaction with tip',
+    handler: helius.sendSmartTransactionWithTipHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        instructions: { type: 'array', items: { type: 'string' } },
+        signers: { type: 'array', items: { type: 'string' } },
+        lookupTables: { type: 'array', items: { type: 'string' } },
+        tipAmount: { type: 'number' },
+        region: { type: 'string' },
+        options: { type: 'object' }
+      },
+      required: ['instructions', 'signers']
+    }
+  },
+  {
+    name: 'helius_send_transaction',
+    description: 'Send a transaction',
+    handler: helius.sendTransactionHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        transaction: { type: 'string' },
+        options: {
+          type: 'object',
+          properties: {
+            skipPreflight: { type: 'boolean' },
+            maxRetries: { type: 'number' }
+          }
+        }
+      },
+      required: ['transaction']
+    }
+  },
+  {
+    name: 'helius_execute_jupiter_swap',
+    description: 'Execute a token swap using Jupiter',
+    handler: helius.executeJupiterSwapHandler,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        inputMint: { type: 'string' },
+        outputMint: { type: 'string' },
+        amount: { type: 'number' },
+        maxDynamicSlippageBps: { type: 'number' },
+        signer: { type: 'string' }
+      },
+      required: ['inputMint', 'outputMint', 'amount', 'signer']
+    }
   }
   /*
   {
@@ -314,6 +663,32 @@ export const handlers: handlerDictionary = {
   "helius_get_leader_schedule": getLeaderScheduleHandler,
   "helius_get_recent_performance_samples": getRecentPerformanceSamplesHandler,
   "helius_get_version": getVersionHandler,
-  "helius_get_health": getHealthHandler
+  "helius_get_health": getHealthHandler,
+  // DAS Methods
+  "helius_get_asset": helius.getAssetHandler,
+  "helius_get_rwa_asset": helius.getRwaAssetHandler,
+  "helius_get_asset_batch": helius.getAssetBatchHandler,
+  "helius_get_asset_proof": helius.getAssetProofHandler,
+  "helius_get_assets_by_group": helius.getAssetsByGroupHandler,
+  "helius_get_assets_by_owner": helius.getAssetsByOwnerHandler,
+  "helius_get_assets_by_creator": helius.getAssetsByCreatorHandler,
+  "helius_get_assets_by_authority": helius.getAssetsByAuthorityHandler,
+  "helius_search_assets": helius.searchAssetsHandler,
+  "helius_get_signatures_for_asset": helius.getSignaturesForAssetHandler,
+  "helius_get_nft_editions": helius.getNftEditionsHandler,
+  "helius_get_token_accounts": helius.getTokenAccountsHandler,
+  // Transaction and Fee Methods
+  "helius_get_priority_fee_estimate": helius.getPriorityFeeEstimateHandler,
+  "helius_get_compute_units": helius.getComputeUnitsHandler,
+  "helius_poll_transaction_confirmation": helius.pollTransactionConfirmationHandler,
+  "helius_create_smart_transaction": helius.createSmartTransactionHandler,
+  "helius_send_smart_transaction": helius.sendSmartTransactionHandler,
+  "helius_add_tip_instruction": helius.addTipInstructionHandler,
+  "helius_create_smart_transaction_with_tip": helius.createSmartTransactionWithTipHandler,
+  "helius_send_jito_bundle": helius.sendJitoBundleHandler,
+  "helius_get_bundle_statuses": helius.getBundleStatusesHandler,
+  "helius_send_smart_transaction_with_tip": helius.sendSmartTransactionWithTipHandler,
+  "helius_send_transaction": helius.sendTransactionHandler,
+  "helius_execute_jupiter_swap": helius.executeJupiterSwapHandler
   // "print_environment": printEnvironmentHandler,
 }

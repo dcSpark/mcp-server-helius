@@ -148,3 +148,181 @@ export type GetVersionInput = {}
 
 export type GetHealthInput = {}
 
+// Additional RPC Methods
+export type AirdropInput = {
+  publicKey: string;
+  lamports: number;
+  commitment?: "confirmed" | "finalized" | "processed";
+}
+
+export type GetCurrentTPSInput = {}
+
+export type GetStakeAccountsInput = {
+  wallet: string;
+}
+
+export type GetTokenHoldersInput = {
+  mintAddress: string;
+}
+
+// DAS Methods
+export type GetAssetInput = {
+  id: string;
+}
+
+export type GetRwaAssetInput = {
+  id: string;
+}
+
+export type GetAssetBatchInput = {
+  ids: string[];
+}
+
+export type GetAssetProofInput = {
+  id: string;
+}
+
+export type GetAssetsByGroupInput = {
+  groupKey: string;
+  groupValue: string;
+  page?: number;
+  limit?: number;
+}
+
+export type GetAssetsByOwnerInput = {
+  owner: string;
+  page?: number;
+  limit?: number;
+}
+
+export type GetAssetsByCreatorInput = {
+  creator: string;
+  page?: number;
+  limit?: number;
+}
+
+export type GetAssetsByAuthorityInput = {
+  authority: string;
+  page?: number;
+  limit?: number;
+}
+
+export type SearchAssetsInput = {
+  query: string;
+  page?: number;
+  limit?: number;
+}
+
+export type GetSignaturesForAssetInput = {
+  id: string;
+  page?: number;
+  limit?: number;
+}
+
+export type GetNftEditionsInput = {
+  masterEditionId: string;
+  page?: number;
+  limit?: number;
+}
+
+export type GetTokenAccountsInput = {
+  mint?: string;
+  owner?: string;
+  page?: number;
+  limit?: number;
+}
+
+// Transaction and Fee Methods
+export type GetPriorityFeeEstimateInput = {
+  accountKeys?: string[];
+  options?: {
+    priorityLevel?: "default" | "high" | "max";
+    includeAllPriorityFeeLevels?: boolean;
+  };
+}
+
+export type GetComputeUnitsInput = {
+  instructions: string[];
+  payer: string;
+  lookupTables?: string[];
+}
+
+export type PollTransactionConfirmationInput = {
+  signature: string;
+  timeout?: number;
+  interval?: number;
+}
+
+export type CreateSmartTransactionInput = {
+  instructions: string[];
+  signers: string[];
+  lookupTables?: string[];
+  options?: {
+    maxPriorityFee?: number;
+  };
+}
+
+export type SendSmartTransactionInput = {
+  instructions: string[];
+  signers: string[];
+  lookupTables?: string[];
+  options?: {
+    maxPriorityFee?: number;
+    skipPreflight?: boolean;
+  };
+}
+
+export type AddTipInstructionInput = {
+  instructions: string[];
+  feePayer: string;
+  tipAccount: string;
+  tipAmount: number;
+}
+
+export type CreateSmartTransactionWithTipInput = {
+  instructions: string[];
+  signers: string[];
+  lookupTables?: string[];
+  tipAmount?: number;
+  options?: {
+    maxPriorityFee?: number;
+  };
+}
+
+export type SendJitoBundleInput = {
+  serializedTransactions: string[];
+  jitoApiUrl: string;
+}
+
+export type GetBundleStatusesInput = {
+  bundleIds: string[];
+  jitoApiUrl: string;
+}
+
+export type SendSmartTransactionWithTipInput = {
+  instructions: string[];
+  signers: string[];
+  lookupTables?: string[];
+  tipAmount?: number;
+  region?: string;
+  options?: {
+    maxPriorityFee?: number;
+  };
+}
+
+export type SendTransactionInput = {
+  transaction: string;
+  options?: {
+    skipPreflight?: boolean;
+    maxRetries?: number;
+  };
+}
+
+export type ExecuteJupiterSwapInput = {
+  inputMint: string;
+  outputMint: string;
+  amount: number;
+  maxDynamicSlippageBps?: number;
+  signer: string;
+}
+
