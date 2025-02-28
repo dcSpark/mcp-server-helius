@@ -301,3 +301,226 @@ export const getHealthHandler = async (input: GetHealthInput): Promise<ToolResul
     return createErrorResponse(`Error getting health: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
+
+// DAS Methods
+export const getAssetHandler = async (input: { id: string }): Promise<ToolResultSchema<any>> => {
+  try {
+    const asset = await helius.rpc.getAsset(input.id);
+    return createSuccessResponse(`Asset details: ${JSON.stringify(asset, null, 2)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting asset: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getRwaAssetHandler = async (input: { id: string }): Promise<ToolResultSchema<any>> => {
+  try {
+    const asset = await helius.rpc.getRwaAsset({ id: input.id });
+    return createSuccessResponse(`RWA Asset details: ${JSON.stringify(asset, null, 2)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting RWA asset: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getAssetBatchHandler = async (input: { ids: string[] }): Promise<ToolResultSchema<any>> => {
+  try {
+    const assets = await helius.rpc.getAssetBatch({ ids: input.ids });
+    return createSuccessResponse(`Asset batch details: ${JSON.stringify(assets, null, 2)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting asset batch: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getAssetProofHandler = async (input: { id: string }): Promise<ToolResultSchema<any>> => {
+  try {
+    const proof = await helius.rpc.getAssetProof({ id: input.id });
+    return createSuccessResponse(`Asset proof: ${JSON.stringify(proof, null, 2)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting asset proof: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getAssetsByGroupHandler = async (input: { groupKey: string, groupValue: string, page?: number, limit?: number }): Promise<ToolResultSchema<any>> => {
+  try {
+    const assets = await helius.rpc.getAssetsByGroup(input);
+    return createSuccessResponse(`Assets by group: ${JSON.stringify(assets, null, 2)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting assets by group: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getAssetsByOwnerHandler = async (input: { owner: string, page?: number, limit?: number }): Promise<ToolResultSchema<any>> => {
+  try {
+    const assets = await helius.rpc.getAssetsByOwner(input);
+    return createSuccessResponse(`Assets by owner: ${JSON.stringify(assets, null, 2)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting assets by owner: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getAssetsByCreatorHandler = async (input: { creator: string, page?: number, limit?: number }): Promise<ToolResultSchema<any>> => {
+  try {
+    const assets = await helius.rpc.getAssetsByCreator(input);
+    return createSuccessResponse(`Assets by creator: ${JSON.stringify(assets, null, 2)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting assets by creator: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getAssetsByAuthorityHandler = async (input: { authority: string, page?: number, limit?: number }): Promise<ToolResultSchema<any>> => {
+  try {
+    const assets = await helius.rpc.getAssetsByAuthority(input);
+    return createSuccessResponse(`Assets by authority: ${JSON.stringify(assets, null, 2)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting assets by authority: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const searchAssetsHandler = async (input: { query: string, page?: number, limit?: number }): Promise<ToolResultSchema<any>> => {
+  try {
+    const assets = await helius.rpc.searchAssets(input);
+    return createSuccessResponse(`Search results: ${JSON.stringify(assets, null, 2)}`);
+  } catch (error) {
+    return createErrorResponse(`Error searching assets: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getSignaturesForAssetHandler = async (input: { id: string, page?: number, limit?: number }): Promise<ToolResultSchema<any>> => {
+  try {
+    const signatures = await helius.rpc.getSignaturesForAsset(input);
+    return createSuccessResponse(`Signatures for asset: ${JSON.stringify(signatures, null, 2)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting signatures for asset: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getNftEditionsHandler = async (input: { masterEditionId: string, page?: number, limit?: number }): Promise<ToolResultSchema<any>> => {
+  try {
+    const editions = await helius.rpc.getNftEditions(input);
+    return createSuccessResponse(`NFT editions: ${JSON.stringify(editions, null, 2)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting NFT editions: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getTokenAccountsHandler = async (input: { mint?: string, owner?: string, page?: number, limit?: number }): Promise<ToolResultSchema<any>> => {
+  try {
+    const accounts = await helius.rpc.getTokenAccounts(input);
+    return createSuccessResponse(`Token accounts: ${JSON.stringify(accounts, null, 2)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting token accounts: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+// Transaction and Fee Methods
+export const getPriorityFeeEstimateHandler = async (input: { accountKeys?: string[], options?: { priorityLevel?: string, includeAllPriorityFeeLevels?: boolean } }): Promise<ToolResultSchema<any>> => {
+  try {
+    const estimate = await helius.rpc.getPriorityFeeEstimate(input);
+    return createSuccessResponse(`Priority fee estimate: ${JSON.stringify(estimate, null, 2)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting priority fee estimate: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getComputeUnitsHandler = async (input: { instructions: string[], payer: string, lookupTables?: string[] }): Promise<ToolResultSchema<any>> => {
+  try {
+    const units = await helius.rpc.getComputeUnits(input.instructions, input.payer, input.lookupTables);
+    return createSuccessResponse(`Compute units: ${units}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting compute units: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const pollTransactionConfirmationHandler = async (input: { signature: string, timeout?: number, interval?: number }): Promise<ToolResultSchema<any>> => {
+  try {
+    const status = await helius.rpc.pollTransactionConfirmation(input.signature, { timeout: input.timeout, interval: input.interval });
+    return createSuccessResponse(`Transaction status: ${status}`);
+  } catch (error) {
+    return createErrorResponse(`Error polling transaction confirmation: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const createSmartTransactionHandler = async (input: { instructions: string[], signers: string[], lookupTables?: string[], options?: any }): Promise<ToolResultSchema<any>> => {
+  try {
+    const transaction = await helius.rpc.createSmartTransaction(input.instructions, input.signers, input.lookupTables, input.options);
+    return createSuccessResponse(`Smart transaction created: ${JSON.stringify(transaction, null, 2)}`);
+  } catch (error) {
+    return createErrorResponse(`Error creating smart transaction: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const sendSmartTransactionHandler = async (input: { instructions: string[], signers: string[], lookupTables?: string[], options?: any }): Promise<ToolResultSchema<any>> => {
+  try {
+    const signature = await helius.rpc.sendSmartTransaction(input.instructions, input.signers, input.lookupTables, input.options);
+    return createSuccessResponse(`Smart transaction sent: ${signature}`);
+  } catch (error) {
+    return createErrorResponse(`Error sending smart transaction: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const addTipInstructionHandler = async (input: { instructions: string[], feePayer: string, tipAccount: string, tipAmount: number }): Promise<ToolResultSchema<any>> => {
+  try {
+    helius.rpc.addTipInstruction(input.instructions, input.feePayer, input.tipAccount, input.tipAmount);
+    return createSuccessResponse('Tip instruction added successfully');
+  } catch (error) {
+    return createErrorResponse(`Error adding tip instruction: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const createSmartTransactionWithTipHandler = async (input: { instructions: string[], signers: string[], lookupTables?: string[], tipAmount?: number, options?: any }): Promise<ToolResultSchema<any>> => {
+  try {
+    const transaction = await helius.rpc.createSmartTransactionWithTip(input.instructions, input.signers, input.lookupTables, input.tipAmount, input.options);
+    return createSuccessResponse(`Smart transaction with tip created: ${JSON.stringify(transaction, null, 2)}`);
+  } catch (error) {
+    return createErrorResponse(`Error creating smart transaction with tip: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const sendJitoBundleHandler = async (input: { serializedTransactions: string[], jitoApiUrl: string }): Promise<ToolResultSchema<any>> => {
+  try {
+    const bundleId = await helius.rpc.sendJitoBundle(input.serializedTransactions, input.jitoApiUrl);
+    return createSuccessResponse(`Jito bundle sent: ${bundleId}`);
+  } catch (error) {
+    return createErrorResponse(`Error sending Jito bundle: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getBundleStatusesHandler = async (input: { bundleIds: string[], jitoApiUrl: string }): Promise<ToolResultSchema<any>> => {
+  try {
+    const statuses = await helius.rpc.getBundleStatuses(input.bundleIds, input.jitoApiUrl);
+    return createSuccessResponse(`Bundle statuses: ${JSON.stringify(statuses, null, 2)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting bundle statuses: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const sendSmartTransactionWithTipHandler = async (input: { instructions: string[], signers: string[], lookupTables?: string[], tipAmount?: number, region?: string, options?: any }): Promise<ToolResultSchema<any>> => {
+  try {
+    const signature = await helius.rpc.sendSmartTransactionWithTip(input.instructions, input.signers, input.lookupTables, input.tipAmount, input.region, input.options);
+    return createSuccessResponse(`Smart transaction with tip sent: ${signature}`);
+  } catch (error) {
+    return createErrorResponse(`Error sending smart transaction with tip: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const sendTransactionHandler = async (input: { transaction: string, options?: { skipPreflight?: boolean, maxRetries?: number } }): Promise<ToolResultSchema<any>> => {
+  try {
+    const signature = await helius.rpc.sendTransaction(input.transaction, input.options);
+    return createSuccessResponse(`Transaction sent: ${signature}`);
+  } catch (error) {
+    return createErrorResponse(`Error sending transaction: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const executeJupiterSwapHandler = async (input: { inputMint: string, outputMint: string, amount: number, maxDynamicSlippageBps?: number, signer: string }): Promise<ToolResultSchema<any>> => {
+  try {
+    const result = await helius.rpc.executeJupiterSwap({ 
+      inputMint: input.inputMint, 
+      outputMint: input.outputMint, 
+      amount: input.amount, 
+      maxDynamicSlippageBps: input.maxDynamicSlippageBps 
+    }, input.signer);
+    return createSuccessResponse(`Jupiter swap executed: ${JSON.stringify(result, null, 2)}`);
+  } catch (error) {
+    return createErrorResponse(`Error executing Jupiter swap: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}

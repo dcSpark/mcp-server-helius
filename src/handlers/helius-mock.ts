@@ -17,7 +17,7 @@ export interface HeliusClient {
     getSlot: (commitment?: Commitment) => Promise<number>;
     getTransaction: (signature: string, options: { maxSupportedTransactionVersion: number, commitment?: Commitment }) => Promise<any>;
     
-    // New methods
+    // Core Solana RPC methods
     getAccountInfo: (publicKey: PublicKey, commitment?: Commitment) => Promise<any>;
     getProgramAccounts: (programId: PublicKey, commitment?: Commitment) => Promise<any>;
     getSignaturesForAddress: (address: PublicKey, options?: { limit?: number, before?: string, until?: string, commitment?: Commitment }) => Promise<any>;
@@ -31,7 +31,43 @@ export interface HeliusClient {
     getRecentPerformanceSamples: (limit?: number) => Promise<any>;
     getVersion: () => Promise<any>;
     getHealth: () => Promise<string>;
+    
+    // Additional RPC methods
+    airdrop: (publicKey: PublicKey, lamports: number, commitment?: Commitment) => Promise<any>;
+    getCurrentTPS: () => Promise<number>;
+    getStakeAccounts: (wallet: string) => Promise<any>;
+    getTokenHolders: (mintAddress: string) => Promise<any>;
   };
+  
+  rpc: {
+    // DAS Methods
+    getAsset: (id: string) => Promise<any>;
+    getRwaAsset: (params: { id: string }) => Promise<any>;
+    getAssetBatch: (params: { ids: string[] }) => Promise<any>;
+    getAssetProof: (params: { id: string }) => Promise<any>;
+    getAssetsByGroup: (params: { groupKey: string, groupValue: string, page?: number, limit?: number }) => Promise<any>;
+    getAssetsByOwner: (params: { owner: string, page?: number, limit?: number }) => Promise<any>;
+    getAssetsByCreator: (params: { creator: string, page?: number, limit?: number }) => Promise<any>;
+    getAssetsByAuthority: (params: { authority: string, page?: number, limit?: number }) => Promise<any>;
+    searchAssets: (params: { query: string, page?: number, limit?: number }) => Promise<any>;
+    getSignaturesForAsset: (params: { id: string, page?: number, limit?: number }) => Promise<any>;
+    getNftEditions: (params: { masterEditionId: string, page?: number, limit?: number }) => Promise<any>;
+    getTokenAccounts: (params: { mint?: string, owner?: string, page?: number, limit?: number }) => Promise<any>;
+    
+    // Transaction and Fee Methods
+    getPriorityFeeEstimate: (params: { accountKeys?: string[], options?: { priorityLevel?: string, includeAllPriorityFeeLevels?: boolean } }) => Promise<any>;
+    getComputeUnits: (instructions: string[], payer: string, lookupTables?: string[]) => Promise<number | null>;
+    pollTransactionConfirmation: (signature: string, options?: { timeout?: number, interval?: number }) => Promise<string>;
+    createSmartTransaction: (instructions: string[], signers: string[], lookupTables?: string[], options?: any) => Promise<any>;
+    sendSmartTransaction: (instructions: string[], signers: string[], lookupTables?: string[], options?: any) => Promise<string>;
+    addTipInstruction: (instructions: string[], feePayer: string, tipAccount: string, tipAmount: number) => void;
+    createSmartTransactionWithTip: (instructions: string[], signers: string[], lookupTables?: string[], tipAmount?: number, options?: any) => Promise<any>;
+    sendJitoBundle: (serializedTransactions: string[], jitoApiUrl: string) => Promise<string>;
+    getBundleStatuses: (bundleIds: string[], jitoApiUrl: string) => Promise<any>;
+    sendSmartTransactionWithTip: (instructions: string[], signers: string[], lookupTables?: string[], tipAmount?: number, region?: string, options?: any) => Promise<string>;
+    sendTransaction: (transaction: string, options?: { skipPreflight?: boolean, maxRetries?: number }) => Promise<string>;
+    executeJupiterSwap: (params: { inputMint: string, outputMint: string, amount: number, maxDynamicSlippageBps?: number }, signer: string) => Promise<any>;
+  }
 }
 
 // Create a mock implementation for testing
@@ -92,7 +128,7 @@ export class MockHeliusClient implements HeliusClient {
       };
     },
     
-    // New mock implementations
+    // Core Solana RPC methods
     getAccountInfo: async (publicKey: PublicKey) => {
       return {
         context: { slot: 123456789 },
@@ -222,6 +258,424 @@ export class MockHeliusClient implements HeliusClient {
     
     getHealth: async () => {
       return "ok";
+    },
+    
+    // Additional RPC methods
+    airdrop: async (publicKey: PublicKey, lamports: number) => {
+      return {
+        signature: "MockAirdropSignature",
+        confirmResponse: {
+          context: { slot: 123456789 },
+          value: { err: null }
+        },
+        blockhash: "MockBlockhash",
+        lastValidBlockHeight: 123456789
+      };
+    },
+    
+    getCurrentTPS: async () => {
+      return 1500; // Mock TPS value
+    },
+    
+    getStakeAccounts: async (wallet: string) => {
+      return {
+        "StakeAccount1": {
+          stake: 1000000000,
+          delegation: {
+            activationEpoch: 100,
+            deactivationEpoch: 200,
+            voter: "ValidatorPubkey1",
+            stake: 1000000000
+          }
+        },
+        "StakeAccount2": {
+          stake: 2000000000,
+          delegation: {
+            activationEpoch: 110,
+            deactivationEpoch: 210,
+            voter: "ValidatorPubkey2",
+            stake: 2000000000
+          }
+        }
+      };
+    },
+    
+    getTokenHolders: async (mintAddress: string) => {
+      return [
+        {
+          pubkey: new PublicKey("TokenHolder1"),
+          account: {
+            data: ["base64data", "base64"],
+            executable: false,
+            lamports: 1000000,
+            owner: "TokenProgramId",
+            rentEpoch: 123
+          }
+        },
+        {
+          pubkey: new PublicKey("TokenHolder2"),
+          account: {
+            data: ["base64data", "base64"],
+            executable: false,
+            lamports: 2000000,
+            owner: "TokenProgramId",
+            rentEpoch: 123
+          }
+        }
+      ];
+    }
+  };
+  
+  rpc = {
+    // DAS Methods
+    getAsset: async (id: string) => {
+      return {
+        id,
+        content: {
+          metadata: {
+            name: "Mock Asset",
+            symbol: "MOCK",
+            description: "A mock asset for testing"
+          }
+        },
+        ownership: {
+          owner: "MockOwner",
+          delegate: null
+        },
+        authorities: [
+          {
+            address: "MockAuthority",
+            scopes: ["full"]
+          }
+        ],
+        compression: {
+          compressed: true,
+          proof: "MockProof"
+        }
+      };
+    },
+    
+    getRwaAsset: async (params: { id: string }) => {
+      return {
+        id: params.id,
+        content: {
+          metadata: {
+            name: "Mock RWA Asset",
+            symbol: "MRWA",
+            description: "A mock RWA asset for testing"
+          }
+        },
+        ownership: {
+          owner: "MockOwner",
+          delegate: null
+        }
+      };
+    },
+    
+    getAssetBatch: async (params: { ids: string[] }) => {
+      return params.ids.map(id => ({
+        id,
+        content: {
+          metadata: {
+            name: `Mock Asset ${id}`,
+            symbol: "MOCK",
+            description: "A mock asset for testing"
+          }
+        },
+        ownership: {
+          owner: "MockOwner",
+          delegate: null
+        }
+      }));
+    },
+    
+    getAssetProof: async (params: { id: string }) => {
+      return {
+        root: "MockRoot",
+        proof: ["MockProof1", "MockProof2"],
+        node_index: 123,
+        leaf: "MockLeaf",
+        tree_id: "MockTreeId"
+      };
+    },
+    
+    getAssetsByGroup: async (params: { groupKey: string, groupValue: string, page?: number, limit?: number }) => {
+      const limit = params.limit || 10;
+      return {
+        total: 100,
+        limit,
+        page: params.page || 1,
+        items: Array(limit).fill(0).map((_, i) => ({
+          id: `MockAsset${i}`,
+          content: {
+            metadata: {
+              name: `Mock Asset ${i}`,
+              symbol: "MOCK",
+              description: "A mock asset for testing"
+            }
+          },
+          ownership: {
+            owner: "MockOwner",
+            delegate: null
+          },
+          grouping: [
+            {
+              group_key: params.groupKey,
+              group_value: params.groupValue
+            }
+          ]
+        }))
+      };
+    },
+    
+    getAssetsByOwner: async (params: { owner: string, page?: number, limit?: number }) => {
+      const limit = params.limit || 10;
+      return {
+        total: 100,
+        limit,
+        page: params.page || 1,
+        items: Array(limit).fill(0).map((_, i) => ({
+          id: `MockAsset${i}`,
+          content: {
+            metadata: {
+              name: `Mock Asset ${i}`,
+              symbol: "MOCK",
+              description: "A mock asset for testing"
+            }
+          },
+          ownership: {
+            owner: params.owner,
+            delegate: null
+          }
+        }))
+      };
+    },
+    
+    getAssetsByCreator: async (params: { creator: string, page?: number, limit?: number }) => {
+      const limit = params.limit || 10;
+      return {
+        total: 100,
+        limit,
+        page: params.page || 1,
+        items: Array(limit).fill(0).map((_, i) => ({
+          id: `MockAsset${i}`,
+          content: {
+            metadata: {
+              name: `Mock Asset ${i}`,
+              symbol: "MOCK",
+              description: "A mock asset for testing"
+            },
+            creators: [
+              {
+                address: params.creator,
+                verified: true,
+                share: 100
+              }
+            ]
+          },
+          ownership: {
+            owner: "MockOwner",
+            delegate: null
+          }
+        }))
+      };
+    },
+    
+    getAssetsByAuthority: async (params: { authority: string, page?: number, limit?: number }) => {
+      const limit = params.limit || 10;
+      return {
+        total: 100,
+        limit,
+        page: params.page || 1,
+        items: Array(limit).fill(0).map((_, i) => ({
+          id: `MockAsset${i}`,
+          content: {
+            metadata: {
+              name: `Mock Asset ${i}`,
+              symbol: "MOCK",
+              description: "A mock asset for testing"
+            }
+          },
+          ownership: {
+            owner: "MockOwner",
+            delegate: null
+          },
+          authorities: [
+            {
+              address: params.authority,
+              scopes: ["full"]
+            }
+          ]
+        }))
+      };
+    },
+    
+    searchAssets: async (params: { query: string, page?: number, limit?: number }) => {
+      const limit = params.limit || 10;
+      return {
+        total: 100,
+        limit,
+        page: params.page || 1,
+        items: Array(limit).fill(0).map((_, i) => ({
+          id: `MockAsset${i}`,
+          content: {
+            metadata: {
+              name: `Mock Asset ${i} ${params.query}`,
+              symbol: "MOCK",
+              description: `A mock asset for testing with query: ${params.query}`
+            }
+          },
+          ownership: {
+            owner: "MockOwner",
+            delegate: null
+          }
+        }))
+      };
+    },
+    
+    getSignaturesForAsset: async (params: { id: string, page?: number, limit?: number }) => {
+      const limit = params.limit || 10;
+      return {
+        total: 100,
+        limit,
+        page: params.page || 1,
+        items: Array(limit).fill(0).map((_, i) => ({
+          signature: `MockSignature${i}`,
+          type: "TRANSFER",
+          source: "MARKETPLACE",
+          slot: 123456789 + i,
+          blockTime: Date.now() / 1000 - i * 3600,
+          memo: null,
+          err: null
+        }))
+      };
+    },
+    
+    getNftEditions: async (params: { masterEditionId: string, page?: number, limit?: number }) => {
+      const limit = params.limit || 10;
+      return {
+        total: 100,
+        limit,
+        page: params.page || 1,
+        items: Array(limit).fill(0).map((_, i) => ({
+          id: `MockEdition${i}`,
+          number: i + 1,
+          masterEdition: params.masterEditionId,
+          content: {
+            metadata: {
+              name: `Mock Edition ${i}`,
+              symbol: "MOCK",
+              description: "A mock edition for testing"
+            }
+          },
+          ownership: {
+            owner: `MockOwner${i}`,
+            delegate: null
+          }
+        }))
+      };
+    },
+    
+    getTokenAccounts: async (params: { mint?: string, owner?: string, page?: number, limit?: number }) => {
+      const limit = params.limit || 10;
+      return {
+        total: 100,
+        limit,
+        page: params.page || 1,
+        items: Array(limit).fill(0).map((_, i) => ({
+          address: `MockTokenAccount${i}`,
+          mint: params.mint || `MockMint${i}`,
+          owner: params.owner || `MockOwner${i}`,
+          amount: 1000000000 + i,
+          delegateOption: 0,
+          delegate: null,
+          state: "initialized",
+          isNative: false,
+          rentExemptReserve: null,
+          closeAuthority: null
+        }))
+      };
+    },
+    
+    // Transaction and Fee Methods
+    getPriorityFeeEstimate: async (params: { accountKeys?: string[], options?: { priorityLevel?: string, includeAllPriorityFeeLevels?: boolean } }) => {
+      if (params.options?.includeAllPriorityFeeLevels) {
+        return {
+          priorityFeeEstimate: 5000,
+          priorityFeeLevels: {
+            default: 5000,
+            high: 10000,
+            max: 20000
+          }
+        };
+      }
+      return {
+        priorityFeeEstimate: 5000
+      };
+    },
+    
+    getComputeUnits: async (instructions: string[], payer: string, lookupTables?: string[]) => {
+      return 200000; // Mock compute units
+    },
+    
+    pollTransactionConfirmation: async (signature: string, options?: { timeout?: number, interval?: number }) => {
+      return signature; // Mock successful confirmation
+    },
+    
+    createSmartTransaction: async (instructions: string[], signers: string[], lookupTables?: string[], options?: any) => {
+      return {
+        serializedTransaction: "MockSerializedTransaction",
+        blockhash: "MockBlockhash",
+        lastValidBlockHeight: 123456789,
+        slot: 123456789
+      };
+    },
+    
+    sendSmartTransaction: async (instructions: string[], signers: string[], lookupTables?: string[], options?: any) => {
+      return "MockTransactionSignature";
+    },
+    
+    addTipInstruction: (instructions: string[], feePayer: string, tipAccount: string, tipAmount: number) => {
+      // Mock implementation - doesn't need to return anything
+    },
+    
+    createSmartTransactionWithTip: async (instructions: string[], signers: string[], lookupTables?: string[], tipAmount?: number, options?: any) => {
+      return {
+        serializedTransaction: "MockSerializedTransactionWithTip",
+        blockhash: "MockBlockhash",
+        lastValidBlockHeight: 123456789,
+        slot: 123456789
+      };
+    },
+    
+    sendJitoBundle: async (serializedTransactions: string[], jitoApiUrl: string) => {
+      return "MockBundleId";
+    },
+    
+    getBundleStatuses: async (bundleIds: string[], jitoApiUrl: string) => {
+      return bundleIds.map(id => ({
+        id,
+        status: "confirmed"
+      }));
+    },
+    
+    sendSmartTransactionWithTip: async (instructions: string[], signers: string[], lookupTables?: string[], tipAmount?: number, region?: string, options?: any) => {
+      return "MockBundleId";
+    },
+    
+    sendTransaction: async (transaction: string, options?: { skipPreflight?: boolean, maxRetries?: number }) => {
+      return "MockTransactionSignature";
+    },
+    
+    executeJupiterSwap: async (params: { inputMint: string, outputMint: string, amount: number, maxDynamicSlippageBps?: number }, signer: string) => {
+      return {
+        signature: "MockSwapSignature",
+        inputAmount: params.amount,
+        outputAmount: params.amount * 10, // Mock exchange rate
+        inputMint: params.inputMint,
+        outputMint: params.outputMint,
+        slippage: params.maxDynamicSlippageBps ? params.maxDynamicSlippageBps / 100 : 0.01
+      };
     }
   };
 } 
