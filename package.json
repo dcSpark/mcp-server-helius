@@ -1,9 +1,9 @@
 {
-  "name": "@dcspark/mcp-server-helius",
+  "name": "@mcp-dockmaster/mcp-server-helius",
   "version": "0.1.3",
   "description": "A Model Context Protocol server example",
   "license": "MIT",
-  "author": "DC Spark <hello@dcspark.io>",
+  "author": "dcSpark <contact@dcspark.io>",
   "bugs": "https://github.com/dcspark/mcp-server-helius/issues",
   "homepage": "https://github.com/dcspark/mcp-server-helius",
   "repository": {
