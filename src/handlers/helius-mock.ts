@@ -23,6 +23,7 @@ export interface HeliusClient {
     getSignaturesForAddress: (address: PublicKey, options?: { limit?: number, before?: string, until?: string, commitment?: Commitment }) => Promise<any>;
     getMinimumBalanceForRentExemption: (dataSize: number, commitment?: Commitment) => Promise<number>;
     getMultipleAccounts: (publicKeys: PublicKey[], commitment?: Commitment) => Promise<any>;
+    getMultipleAccountsInfo: (publicKeys: PublicKey[], commitment?: Commitment) => Promise<any>;
     getFeeForMessage: (message: string, commitment?: Commitment) => Promise<any>;
     getInflationReward: (addresses: PublicKey[], epoch?: number, commitment?: Commitment) => Promise<any>;
     getEpochInfo: (commitment?: Commitment) => Promise<any>;
@@ -46,9 +47,9 @@ export interface HeliusClient {
     getAssetBatch: (params: { ids: string[] }) => Promise<any>;
     getAssetProof: (params: { id: string }) => Promise<any>;
     getAssetsByGroup: (params: { groupKey: string, groupValue: string, page?: number, limit?: number }) => Promise<any>;
-    getAssetsByOwner: (params: { owner: string, page?: number, limit?: number }) => Promise<any>;
-    getAssetsByCreator: (params: { creator: string, page?: number, limit?: number }) => Promise<any>;
-    getAssetsByAuthority: (params: { authority: string, page?: number, limit?: number }) => Promise<any>;
+    getAssetsByOwner: (params: { ownerAddress: string, page?: number, limit?: number }) => Promise<any>;
+    getAssetsByCreator: (params: { creatorAddress: string, page?: number, limit?: number }) => Promise<any>;
+    getAssetsByAuthority: (params: { authorityAddress: string, page?: number, limit?: number }) => Promise<any>;
     searchAssets: (params: { query: string, page?: number, limit?: number }) => Promise<any>;
     getSignaturesForAsset: (params: { id: string, page?: number, limit?: number }) => Promise<any>;
     getNftEditions: (params: { masterEditionId: string, page?: number, limit?: number }) => Promise<any>;
@@ -193,6 +194,16 @@ export class MockHeliusClient implements HeliusClient {
           rentEpoch: 123
         }))
       };
+    },
+    
+    getMultipleAccountsInfo: async (publicKeys: PublicKey[]) => {
+      return publicKeys.map((pk, i) => ({
+        data: ["base64data", "base64"],
+        executable: false,
+        lamports: 1000000000 + i,
+        owner: "11111111111111111111111111111111",
+        rentEpoch: 123
+      }));
     },
     
     getFeeForMessage: async (message: string) => {
@@ -428,7 +439,7 @@ export class MockHeliusClient implements HeliusClient {
       };
     },
     
-    getAssetsByOwner: async (params: { owner: string, page?: number, limit?: number }) => {
+    getAssetsByOwner: async (params: { ownerAddress: string, page?: number, limit?: number }) => {
       const limit = params.limit || 10;
       return {
         total: 100,
@@ -444,14 +455,14 @@ export class MockHeliusClient implements HeliusClient {
             }
           },
           ownership: {
-            owner: params.owner,
+            owner: params.ownerAddress,
             delegate: null
           }
         }))
       };
     },
     
-    getAssetsByCreator: async (params: { creator: string, page?: number, limit?: number }) => {
+    getAssetsByCreator: async (params: { creatorAddress: string, page?: number, limit?: number }) => {
       const limit = params.limit || 10;
       return {
         total: 100,
@@ -467,7 +478,7 @@ export class MockHeliusClient implements HeliusClient {
             },
             creators: [
               {
-                address: params.creator,
+                address: params.creatorAddress,
                 verified: true,
                 share: 100
               }
@@ -481,7 +492,7 @@ export class MockHeliusClient implements HeliusClient {
       };
     },
     
-    getAssetsByAuthority: async (params: { authority: string, page?: number, limit?: number }) => {
+    getAssetsByAuthority: async (params: { authorityAddress: string, page?: number, limit?: number }) => {
       const limit = params.limit || 10;
       return {
         total: 100,
@@ -502,7 +513,7 @@ export class MockHeliusClient implements HeliusClient {
           },
           authorities: [
             {
-              address: params.authority,
+              address: params.authorityAddress,
               scopes: ["full"]
             }
           ]
