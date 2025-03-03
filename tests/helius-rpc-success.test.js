@@ -8,7 +8,11 @@ process.env.TEST_MODE = 'true';
 
 // Import the handlers
 import { 
-  // DAS Methods
+  pollTransactionConfirmationHandler,
+  sendJitoBundleHandler,
+  getBundleStatusesHandler,
+  executeJupiterSwapHandler,
+  getPriorityFeeEstimateHandler,
   getAssetHandler,
   getRwaAssetHandler,
   getAssetBatchHandler,
@@ -21,22 +25,7 @@ import {
   getSignaturesForAssetHandler,
   getNftEditionsHandler,
   getTokenAccountsHandler,
-  
-  // Transaction and Fee Methods
-  getPriorityFeeEstimateHandler,
-  getComputeUnitsHandler,
-  pollTransactionConfirmationHandler,
-  createSmartTransactionHandler,
-  sendSmartTransactionHandler,
-  addTipInstructionHandler,
-  createSmartTransactionWithTipHandler,
-  sendJitoBundleHandler,
-  getBundleStatusesHandler,
-  sendSmartTransactionWithTipHandler,
-  sendTransactionHandler,
-  executeJupiterSwapHandler
 } from '../build/handlers/helius.js';
-
 // Valid test values
 const VALID_PUBLIC_KEY = 'GsbwXfJraMomNxBcjK7xK2xQx5MQgQx8Kb71Wkgwq1Bi';
 const VALID_ASSET_ID = 'AssetR1cUu5tNubCzitKAoEKLCKmRjWxWZTp32JzNrNsA';
@@ -196,20 +185,12 @@ describe('Helius RPC Handlers Success Tests', () => {
         options: { priorityLevel: 'high' }
       });
       assert.strictEqual(result.isError, false);
-      
-      const content = JSON.parse(result.content[0].text.replace('Priority fee estimate: ', ''));
-      assert.ok(content.priorityFeeEstimate !== undefined);
-    });
-  });
-
-  describe('getComputeUnitsHandler', () => {
-    test('should return compute units', async () => {
-      const result = await getComputeUnitsHandler({ 
-        instructions: [VALID_INSTRUCTION], 
-        payer: VALID_PUBLIC_KEY 
-      });
-      assert.strictEqual(result.isError, false);
-      assert.ok(result.content[0].text.includes('Compute units:'));
+      const content = result.content[0].text;
+      const [priorityFeeEstimate, priorityFeeLevels] = content.split('priorityFeeLevels:');
+      const priorityFeeEstimateObject = JSON.parse(priorityFeeEstimate.replace('Priority fee estimate: ', ''));
+      const priorityFeeLevelsObject = JSON.parse(priorityFeeLevels);
+      assert.ok(priorityFeeEstimateObject !== undefined);
+      assert.ok(priorityFeeLevelsObject !== undefined);
     });
   });
 
@@ -222,57 +203,6 @@ describe('Helius RPC Handlers Success Tests', () => {
       });
       assert.strictEqual(result.isError, false);
       assert.ok(result.content[0].text.includes('Transaction status:'));
-    });
-  });
-
-  describe('createSmartTransactionHandler', () => {
-    test('should create smart transaction', async () => {
-      const result = await createSmartTransactionHandler({ 
-        instructions: [VALID_INSTRUCTION],
-        signers: [VALID_PUBLIC_KEY]
-      });
-      assert.strictEqual(result.isError, false);
-      
-      const content = JSON.parse(result.content[0].text.replace('Smart transaction created: ', ''));
-      assert.ok(content);
-    });
-  });
-
-  describe('sendSmartTransactionHandler', () => {
-    test('should send smart transaction', async () => {
-      const result = await sendSmartTransactionHandler({ 
-        instructions: [VALID_INSTRUCTION],
-        signers: [VALID_PUBLIC_KEY]
-      });
-      assert.strictEqual(result.isError, false);
-      assert.ok(result.content[0].text.includes('Smart transaction sent:'));
-    });
-  });
-
-  describe('addTipInstructionHandler', () => {
-    test('should add tip instruction', async () => {
-      const result = await addTipInstructionHandler({ 
-        instructions: [VALID_INSTRUCTION],
-        feePayer: VALID_PUBLIC_KEY,
-        tipAccount: VALID_PUBLIC_KEY,
-        tipAmount: 1000000
-      });
-      assert.strictEqual(result.isError, false);
-      assert.strictEqual(result.content[0].text, 'Tip instruction added successfully');
-    });
-  });
-
-  describe('createSmartTransactionWithTipHandler', () => {
-    test('should create smart transaction with tip', async () => {
-      const result = await createSmartTransactionWithTipHandler({ 
-        instructions: [VALID_INSTRUCTION],
-        signers: [VALID_PUBLIC_KEY],
-        tipAmount: 1000000
-      });
-      assert.strictEqual(result.isError, false);
-      
-      const content = JSON.parse(result.content[0].text.replace('Smart transaction with tip created: ', ''));
-      assert.ok(content);
     });
   });
 
@@ -300,30 +230,6 @@ describe('Helius RPC Handlers Success Tests', () => {
     });
   });
 
-  describe('sendSmartTransactionWithTipHandler', () => {
-    test('should send smart transaction with tip', async () => {
-      const result = await sendSmartTransactionWithTipHandler({ 
-        instructions: [VALID_INSTRUCTION],
-        signers: [VALID_PUBLIC_KEY],
-        tipAmount: 1000000,
-        region: 'us-east-1'
-      });
-      assert.strictEqual(result.isError, false);
-      assert.ok(result.content[0].text.includes('Smart transaction with tip sent:'));
-    });
-  });
-
-  describe('sendTransactionHandler', () => {
-    test('should send transaction', async () => {
-      const result = await sendTransactionHandler({ 
-        transaction: VALID_TRANSACTION,
-        options: { skipPreflight: false, maxRetries: 3 }
-      });
-      assert.strictEqual(result.isError, false);
-      assert.ok(result.content[0].text.includes('Transaction sent:'));
-    });
-  });
-
   describe('executeJupiterSwapHandler', () => {
     test('should execute Jupiter swap', async () => {
       const result = await executeJupiterSwapHandler({ 
@@ -337,6 +243,10 @@ describe('Helius RPC Handlers Success Tests', () => {
       
       const content = JSON.parse(result.content[0].text.replace('Jupiter swap executed: ', ''));
       assert.ok(content);
+      // Check for expected properties in the swap result
+      assert.ok(content.txid || content.signature || content.transactionId, "Should have a transaction identifier");
+      assert.ok(content.inputAmount !== undefined || content.inAmount !== undefined, "Should have input amount information");
+      assert.ok(content.outputAmount !== undefined || content.outAmount !== undefined, "Should have output amount information");
     });
   });
 }); 

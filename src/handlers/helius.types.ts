@@ -116,11 +116,6 @@ export type GetMultipleAccountsInput = {
   commitment?: "confirmed" | "finalized" | "processed";
 }
 
-export type GetFeeForMessageInput = {
-  message: string;
-  commitment?: "confirmed" | "finalized" | "processed";
-}
-
 export type GetInflationRewardInput = {
   addresses: string[];
   epoch?: number;
@@ -145,8 +140,6 @@ export type GetRecentPerformanceSamplesInput = {
 }
 
 export type GetVersionInput = {}
-
-export type GetHealthInput = {}
 
 // Additional RPC Methods
 export type AirdropInput = {
@@ -241,52 +234,10 @@ export type GetPriorityFeeEstimateInput = {
   };
 }
 
-export type GetComputeUnitsInput = {
-  instructions: string[];
-  payer: string;
-  lookupTables?: string[];
-}
-
 export type PollTransactionConfirmationInput = {
   signature: string;
   timeout?: number;
   interval?: number;
-}
-
-export type CreateSmartTransactionInput = {
-  instructions: string[];
-  signers: string[];
-  lookupTables?: string[];
-  options?: {
-    maxPriorityFee?: number;
-  };
-}
-
-export type SendSmartTransactionInput = {
-  instructions: string[];
-  signers: string[];
-  lookupTables?: string[];
-  options?: {
-    maxPriorityFee?: number;
-    skipPreflight?: boolean;
-  };
-}
-
-export type AddTipInstructionInput = {
-  instructions: string[];
-  feePayer: string;
-  tipAccount: string;
-  tipAmount: number;
-}
-
-export type CreateSmartTransactionWithTipInput = {
-  instructions: string[];
-  signers: string[];
-  lookupTables?: string[];
-  tipAmount?: number;
-  options?: {
-    maxPriorityFee?: number;
-  };
 }
 
 export type SendJitoBundleInput = {
@@ -299,23 +250,9 @@ export type GetBundleStatusesInput = {
   jitoApiUrl: string;
 }
 
-export type SendSmartTransactionWithTipInput = {
-  instructions: string[];
-  signers: string[];
-  lookupTables?: string[];
-  tipAmount?: number;
-  region?: string;
-  options?: {
-    maxPriorityFee?: number;
-  };
-}
-
-export type SendTransactionInput = {
-  transaction: string;
-  options?: {
-    skipPreflight?: boolean;
-    maxRetries?: number;
-  };
+export type GetFeeForMessageInput = {
+  message: string; // Base64 encoded message string
+  commitment?: "confirmed" | "finalized" | "processed";
 }
 
 export type ExecuteJupiterSwapInput = {

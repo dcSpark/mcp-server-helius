@@ -33,6 +33,7 @@ const VALID_INSTRUCTION = 'AgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 describe('Helius RPC Handlers Tests', () => {
   // Basic Methods Tests
   describe('getBalanceHandler', () => {
+
     test('should return error for invalid public key', async () => {
       const result = await helius.getBalanceHandler({ publicKey: 'invalid-public-key' });
       assert.strictEqual(result.content[0].type, 'text');

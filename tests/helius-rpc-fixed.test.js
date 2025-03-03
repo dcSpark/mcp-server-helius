@@ -31,13 +31,24 @@ const VALID_TRANSACTION = 'AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 const VALID_INSTRUCTION = 'AgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAQMBBnNvbGFuYQECBQECAgEMAgAAAADg4zsAAAAAAA==';
 
 describe('Helius RPC Handlers Tests', () => {
-  // Basic Methods Tests
-  describe('getBalanceHandler', () => {
-    test('should return error for invalid public key', async () => {
-      const result = await helius.getBalanceHandler({ publicKey: 'invalid-public-key' });
+  // DAS Methods Tests
+  describe('getAssetHandler', () => {
+    test('should return mock asset details in test mode', async () => {
+      const result = await helius.getAssetHandler({ id: VALID_ASSET_ID });
+      console.log('getAssetHandler result', JSON.stringify(result, null, 2));
       assert.strictEqual(result.content[0].type, 'text');
-      assert.strictEqual(result.isError, true);
-      assert.strictEqual(result.content[0].text.includes('Invalid public key'), true);
+      assert.strictEqual(result.isError, false);
+      assert.strictEqual(result.content[0].text.includes('Mock Asset'), true);
+    });
+  });
+
+  describe('getRwaAssetHandler', () => {
+    test('should return mock RWA asset details in test mode', async () => {
+      const result = await helius.getRwaAssetHandler({ id: VALID_ASSET_ID });
+      console.log('getRwaAssetHandler result', JSON.stringify(result, null, 2));
+      assert.strictEqual(result.content[0].type, 'text');
+      assert.strictEqual(result.isError, false);
+      assert.strictEqual(result.content[0].text.includes('Mock RWA Asset'), true);
     });
   });
 

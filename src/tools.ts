@@ -14,14 +14,18 @@ import {
   getSignaturesForAddressHandler,
   getMinimumBalanceForRentExemptionHandler,
   getMultipleAccountsHandler,
-  getFeeForMessageHandler,
   getInflationRewardHandler,
   getEpochInfoHandler,
   getEpochScheduleHandler,
   getLeaderScheduleHandler,
   getRecentPerformanceSamplesHandler,
   getVersionHandler,
-  getHealthHandler
+  getPriorityFeeEstimateHandler,
+  pollTransactionConfirmationHandler,
+  sendJitoBundleHandler,
+  getBundleStatusesHandler,
+  getFeeForMessageHandler,
+  executeJupiterSwapHandler
 } from "./handlers/helius.js";
 
 export const tools = [
@@ -185,18 +189,6 @@ export const tools = [
     }
   },
   {
-    name: "helius_get_fee_for_message",
-    description: "Get the fee for a message",
-    inputSchema: {
-      type: "object",
-      properties: {
-        message: { type: "string" },
-        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
-      },
-      required: ["message"]
-    }
-  },
-  {
     name: "helius_get_inflation_reward",
     description: "Get inflation rewards for a list of addresses",
     inputSchema: {
@@ -266,20 +258,10 @@ export const tools = [
       required: []
     }
   },
-  {
-    name: "helius_get_health",
-    description: "Get the health of the Solana node",
-    inputSchema: {
-      type: "object",
-      properties: {},
-      required: []
-    }
-  },
   // DAS Methods
   {
     name: 'helius_get_asset',
     description: 'Get details of a digital asset by its ID',
-    handler: helius.getAssetHandler,
     inputSchema: {
       type: 'object',
       properties: {
@@ -291,7 +273,6 @@ export const tools = [
   {
     name: 'helius_get_rwa_asset',
     description: 'Get details of a real-world asset by its ID',
-    handler: helius.getRwaAssetHandler,
     inputSchema: {
       type: 'object',
       properties: {
@@ -303,7 +284,6 @@ export const tools = [
   {
     name: 'helius_get_asset_batch',
     description: 'Get details of multiple assets by their IDs',
-    handler: helius.getAssetBatchHandler,
     inputSchema: {
       type: 'object',
       properties: {
@@ -315,7 +295,6 @@ export const tools = [
   {
     name: 'helius_get_asset_proof',
     description: 'Get proof for a digital asset',
-    handler: helius.getAssetProofHandler,
     inputSchema: {
       type: 'object',
       properties: {
@@ -327,7 +306,6 @@ export const tools = [
   {
     name: 'helius_get_assets_by_group',
     description: 'Get assets by group key and value',
-    handler: helius.getAssetsByGroupHandler,
     inputSchema: {
       type: 'object',
       properties: {
@@ -342,7 +320,6 @@ export const tools = [
   {
     name: 'helius_get_assets_by_owner',
     description: 'Get assets owned by a specific address',
-    handler: helius.getAssetsByOwnerHandler,
     inputSchema: {
       type: 'object',
       properties: {
@@ -356,7 +333,6 @@ export const tools = [
   {
     name: 'helius_get_assets_by_creator',
     description: 'Get assets created by a specific address',
-    handler: helius.getAssetsByCreatorHandler,
     inputSchema: {
       type: 'object',
       properties: {
@@ -370,7 +346,6 @@ export const tools = [
   {
     name: 'helius_get_assets_by_authority',
     description: 'Get assets by authority address',
-    handler: helius.getAssetsByAuthorityHandler,
     inputSchema: {
       type: 'object',
       properties: {
@@ -384,7 +359,6 @@ export const tools = [
   {
     name: 'helius_search_assets',
     description: 'Search for assets using a query string',
-    handler: helius.searchAssetsHandler,
     inputSchema: {
       type: 'object',
       properties: {
@@ -398,7 +372,6 @@ export const tools = [
   {
     name: 'helius_get_signatures_for_asset',
     description: 'Get signatures associated with an asset',
-    handler: helius.getSignaturesForAssetHandler,
     inputSchema: {
       type: 'object',
       properties: {
@@ -412,7 +385,6 @@ export const tools = [
   {
     name: 'helius_get_nft_editions',
     description: 'Get NFT editions for a master edition',
-    handler: helius.getNftEditionsHandler,
     inputSchema: {
       type: 'object',
       properties: {
@@ -426,7 +398,6 @@ export const tools = [
   {
     name: 'helius_get_token_accounts',
     description: 'Get token accounts by mint or owner',
-    handler: helius.getTokenAccountsHandler,
     inputSchema: {
       type: 'object',
       properties: {
@@ -441,7 +412,6 @@ export const tools = [
   {
     name: 'helius_get_priority_fee_estimate',
     description: 'Get priority fee estimate for a transaction',
-    handler: helius.getPriorityFeeEstimateHandler,
     inputSchema: {
       type: 'object',
       properties: {
@@ -457,23 +427,8 @@ export const tools = [
     }
   },
   {
-    name: 'helius_get_compute_units',
-    description: 'Get compute units required for instructions',
-    handler: helius.getComputeUnitsHandler,
-    inputSchema: {
-      type: 'object',
-      properties: {
-        instructions: { type: 'array', items: { type: 'string' } },
-        payer: { type: 'string' },
-        lookupTables: { type: 'array', items: { type: 'string' } }
-      },
-      required: ['instructions', 'payer']
-    }
-  },
-  {
     name: 'helius_poll_transaction_confirmation',
     description: 'Poll for transaction confirmation status',
-    handler: helius.pollTransactionConfirmationHandler,
     inputSchema: {
       type: 'object',
       properties: {
@@ -485,70 +440,8 @@ export const tools = [
     }
   },
   {
-    name: 'helius_create_smart_transaction',
-    description: 'Create a smart transaction',
-    handler: helius.createSmartTransactionHandler,
-    inputSchema: {
-      type: 'object',
-      properties: {
-        instructions: { type: 'array', items: { type: 'string' } },
-        signers: { type: 'array', items: { type: 'string' } },
-        lookupTables: { type: 'array', items: { type: 'string' } },
-        options: { type: 'object' }
-      },
-      required: ['instructions', 'signers']
-    }
-  },
-  {
-    name: 'helius_send_smart_transaction',
-    description: 'Send a smart transaction',
-    handler: helius.sendSmartTransactionHandler,
-    inputSchema: {
-      type: 'object',
-      properties: {
-        instructions: { type: 'array', items: { type: 'string' } },
-        signers: { type: 'array', items: { type: 'string' } },
-        lookupTables: { type: 'array', items: { type: 'string' } },
-        options: { type: 'object' }
-      },
-      required: ['instructions', 'signers']
-    }
-  },
-  {
-    name: 'helius_add_tip_instruction',
-    description: 'Add a tip instruction to a transaction',
-    handler: helius.addTipInstructionHandler,
-    inputSchema: {
-      type: 'object',
-      properties: {
-        instructions: { type: 'array', items: { type: 'string' } },
-        feePayer: { type: 'string' },
-        tipAccount: { type: 'string' },
-        tipAmount: { type: 'number' }
-      },
-      required: ['instructions', 'feePayer', 'tipAccount', 'tipAmount']
-    }
-  },
-  {
-    name: 'helius_create_smart_transaction_with_tip',
-    description: 'Create a smart transaction with tip',
-    handler: helius.createSmartTransactionWithTipHandler,
-    inputSchema: {
-      type: 'object',
-      properties: {
-        instructions: { type: 'array', items: { type: 'string' } },
-        signers: { type: 'array', items: { type: 'string' } },
-        lookupTables: { type: 'array', items: { type: 'string' } },
-        tipAmount: { type: 'number' },
-        options: { type: 'object' }
-      },
-      required: ['instructions', 'signers']
-    }
-  },
-  {
     name: 'helius_send_jito_bundle',
     description: 'Send a bundle of transactions to Jito',
-    handler: helius.sendJitoBundleHandler,
     inputSchema: {
       type: 'object',
       properties: {
@@ -561,7 +454,6 @@ export const tools = [
   {
     name: 'helius_get_bundle_statuses',
     description: 'Get statuses of Jito bundles',
-    handler: helius.getBundleStatusesHandler,
     inputSchema: {
       type: 'object',
       properties: {
@@ -572,53 +464,28 @@ export const tools = [
     }
   },
   {
-    name: 'helius_send_smart_transaction_with_tip',
-    description: 'Send a smart transaction with tip',
-    handler: helius.sendSmartTransactionWithTipHandler,
+    name: 'helius_get_fee_for_message',
+    description: 'Get the fee for a serialized message',
     inputSchema: {
       type: 'object',
       properties: {
-        instructions: { type: 'array', items: { type: 'string' } },
-        signers: { type: 'array', items: { type: 'string' } },
-        lookupTables: { type: 'array', items: { type: 'string' } },
-        tipAmount: { type: 'number' },
-        region: { type: 'string' },
-        options: { type: 'object' }
+        message: { type: 'string', description: 'Base64 encoded message string' },
+        commitment: { type: 'string', enum: ['confirmed', 'finalized', 'processed'] }
       },
-      required: ['instructions', 'signers']
-    }
-  },
-  {
-    name: 'helius_send_transaction',
-    description: 'Send a transaction',
-    handler: helius.sendTransactionHandler,
-    inputSchema: {
-      type: 'object',
-      properties: {
-        transaction: { type: 'string' },
-        options: {
-          type: 'object',
-          properties: {
-            skipPreflight: { type: 'boolean' },
-            maxRetries: { type: 'number' }
-          }
-        }
-      },
-      required: ['transaction']
+      required: ['message']
     }
   },
   {
     name: 'helius_execute_jupiter_swap',
     description: 'Execute a token swap using Jupiter',
-    handler: helius.executeJupiterSwapHandler,
     inputSchema: {
       type: 'object',
       properties: {
-        inputMint: { type: 'string' },
-        outputMint: { type: 'string' },
-        amount: { type: 'number' },
-        maxDynamicSlippageBps: { type: 'number' },
-        signer: { type: 'string' }
+        inputMint: { type: 'string', description: 'The mint address of the input token' },
+        outputMint: { type: 'string', description: 'The mint address of the output token' },
+        amount: { type: 'number', description: 'The amount of input tokens to swap' },
+        maxDynamicSlippageBps: { type: 'number', description: 'Maximum slippage in basis points (optional)' },
+        signer: { type: 'string', description: 'The signer public key' }
       },
       required: ['inputMint', 'outputMint', 'amount', 'signer']
     }
@@ -656,14 +523,12 @@ export const handlers: handlerDictionary = {
   "helius_get_signatures_for_address": getSignaturesForAddressHandler,
   "helius_get_minimum_balance_for_rent_exemption": getMinimumBalanceForRentExemptionHandler,
   "helius_get_multiple_accounts": getMultipleAccountsHandler,
-  "helius_get_fee_for_message": getFeeForMessageHandler,
   "helius_get_inflation_reward": getInflationRewardHandler,
   "helius_get_epoch_info": getEpochInfoHandler,
   "helius_get_epoch_schedule": getEpochScheduleHandler,
   "helius_get_leader_schedule": getLeaderScheduleHandler,
   "helius_get_recent_performance_samples": getRecentPerformanceSamplesHandler,
   "helius_get_version": getVersionHandler,
-  "helius_get_health": getHealthHandler,
   // DAS Methods
   "helius_get_asset": helius.getAssetHandler,
   "helius_get_rwa_asset": helius.getRwaAssetHandler,
@@ -679,16 +544,10 @@ export const handlers: handlerDictionary = {
   "helius_get_token_accounts": helius.getTokenAccountsHandler,
   // Transaction and Fee Methods
   "helius_get_priority_fee_estimate": helius.getPriorityFeeEstimateHandler,
-  "helius_get_compute_units": helius.getComputeUnitsHandler,
   "helius_poll_transaction_confirmation": helius.pollTransactionConfirmationHandler,
-  "helius_create_smart_transaction": helius.createSmartTransactionHandler,
-  "helius_send_smart_transaction": helius.sendSmartTransactionHandler,
-  "helius_add_tip_instruction": helius.addTipInstructionHandler,
-  "helius_create_smart_transaction_with_tip": helius.createSmartTransactionWithTipHandler,
   "helius_send_jito_bundle": helius.sendJitoBundleHandler,
   "helius_get_bundle_statuses": helius.getBundleStatusesHandler,
-  "helius_send_smart_transaction_with_tip": helius.sendSmartTransactionWithTipHandler,
-  "helius_send_transaction": helius.sendTransactionHandler,
-  "helius_execute_jupiter_swap": helius.executeJupiterSwapHandler
+  "helius_get_fee_for_message": getFeeForMessageHandler,
+  "helius_execute_jupiter_swap": executeJupiterSwapHandler
   // "print_environment": printEnvironmentHandler,
 }

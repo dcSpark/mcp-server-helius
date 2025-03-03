@@ -44,7 +44,6 @@ import {
   getLeaderScheduleHandler,
   getRecentPerformanceSamplesHandler,
   getVersionHandler,
-  getHealthHandler
 } from '../build/handlers/helius.js';
 
 // Valid Solana addresses for testing
@@ -311,15 +310,6 @@ describe('Helius Handlers Tests', () => {
       assert.strictEqual(result.content[0].type, 'text');
       assert.strictEqual(result.isError, false);
       assert.strictEqual(result.content[0].text.includes('Version:'), true);
-    });
-  });
-
-  describe('getHealthHandler', () => {
-    test('should return health', async () => {
-      const result = await getHealthHandler({});
-      assert.strictEqual(result.content[0].type, 'text');
-      assert.strictEqual(result.isError, false);
-      assert.strictEqual(result.content[0].text.includes('Health:'), true);
     });
   });
 }); 
