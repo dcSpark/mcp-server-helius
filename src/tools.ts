@@ -5,6 +5,7 @@ import {
   getBlockHeightHandler, 
   getTokenAccountsByOwnerHandler, 
   getTokenSupplyHandler,
+  getTokenLargestAccountsHandler,
   getLatestBlockhashHandler,
   getTokenAccountBalanceHandler,
   getSlotHandler,
@@ -71,6 +72,18 @@ export const tools = [
       type: "object",
       properties: {
         tokenAddress: { type: "string" }
+      },
+      required: ["tokenAddress"]
+    }
+  },
+  {
+    name: "helius_get_token_largest_accounts",
+    description: "Get the largest token accounts for a specific token mint",
+    inputSchema: {
+      type: "object",
+      properties: {
+        tokenAddress: { type: "string" },
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
       },
       required: ["tokenAddress"]
     }
@@ -513,6 +526,7 @@ export const handlers: handlerDictionary = {
   "helius_get_block_height": getBlockHeightHandler,
   "helius_get_token_accounts_by_owner": getTokenAccountsByOwnerHandler,
   "helius_get_token_supply": getTokenSupplyHandler,
+  "helius_get_token_largest_accounts": getTokenLargestAccountsHandler,
   "helius_get_latest_blockhash": getLatestBlockhashHandler,
   "helius_get_token_account_balance": getTokenAccountBalanceHandler,
   "helius_get_slot": getSlotHandler,

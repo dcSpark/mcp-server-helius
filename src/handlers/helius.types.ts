@@ -25,6 +25,11 @@ export type GetTokenSupplyOutput = {
   tokenSupply: number;
 }
 
+export type GetTokenLargestAccountsInput = {
+  tokenAddress: string;
+  commitment?: "confirmed" | "finalized" | "processed";
+}
+
 export type GetTokenAccountsByOwnerInput = {
   publicKey: string;
   programId: string;
