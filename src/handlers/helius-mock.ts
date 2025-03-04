@@ -396,25 +396,18 @@ export class MockHeliusClient implements HeliusClient {
     
     getBlockCommitment: async (block: number) => {
       return {
-        commitment: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32],
-        totalStake: 42
+        commitment: Array(32).fill(1000),
+        totalStake: 1000000000
       };
     },
     
     getClusterNodes: async () => {
       return [
         {
-          pubkey: "Node1Pubkey",
+          pubkey: "Node1PublicKey",
           gossip: "127.0.0.1:8001",
           tpu: "127.0.0.1:8002",
           rpc: "127.0.0.1:8003",
-          version: "1.0.0"
-        },
-        {
-          pubkey: "Node2Pubkey",
-          gossip: "127.0.0.1:8011",
-          tpu: "127.0.0.1:8012",
-          rpc: "127.0.0.1:8013",
           version: "1.0.0"
         }
       ];
@@ -422,16 +415,16 @@ export class MockHeliusClient implements HeliusClient {
     
     getIdentity: async () => {
       return {
-        identity: "MockNodeIdentityPubkey"
+        identity: "IdentityPublicKey"
       };
     },
     
     getSlotLeader: async (commitment?: Commitment) => {
-      return "MockSlotLeaderPubkey";
+      return "SlotLeaderPublicKey";
     },
     
     getGenesisHash: async () => {
-      return "MockGenesisHash123456789";
+      return "GenesisHashString";
     },
     
     getStakeMinimumDelegation: async (config?: { commitment?: Commitment }) => {
@@ -442,13 +435,10 @@ export class MockHeliusClient implements HeliusClient {
       return {
         current: [
           {
-            votePubkey: "Vote1Pubkey",
-            nodePubkey: "Node1Pubkey",
+            votePubkey: "VoteAccount1",
+            nodePubkey: "Node1",
             activatedStake: 1000000000,
-            epochVoteAccount: true,
-            commission: 10,
-            lastVote: 123456789,
-            epochCredits: [[1, 100, 0], [2, 200, 100]]
+            epochVoteAccount: true
           }
         ],
         delinquent: []
@@ -470,7 +460,7 @@ export class MockHeliusClient implements HeliusClient {
     },
     
     requestAirdrop: async (publicKey: PublicKey, lamports: number) => {
-      return "MockAirdropTransactionSignature";
+      return "AirdropSignature";
     },
     
     getTokenAccountsByDelegate: async (delegate: PublicKey, filter: { programId: PublicKey }) => {
@@ -478,25 +468,25 @@ export class MockHeliusClient implements HeliusClient {
         context: { slot: 123456789 },
         value: [
           {
-            pubkey: new PublicKey("TokenAccount1Pubkey"),
+            pubkey: "DelegateTokenAccount1",
             account: {
               data: {
-                program: "spl-token",
                 parsed: {
                   info: {
                     mint: "TokenMint1",
                     owner: "TokenOwner1",
                     delegate: delegate.toString(),
-                    delegatedAmount: 1000000000,
-                    state: "initialized"
+                    delegatedAmount: 1000000000
                   },
                   type: "account"
-                }
+                },
+                program: "spl-token",
+                space: 165
               },
               executable: false,
-              lamports: 1000000000,
+              lamports: 2039280,
               owner: filter.programId.toString(),
-              rentEpoch: 123
+              rentEpoch: 327
             }
           }
         ]
@@ -516,7 +506,7 @@ export class MockHeliusClient implements HeliusClient {
     },
     
     getSlotLeaders: async (startSlot: number, limit: number) => {
-      return Array(limit).fill(0).map(() => "MockSlotLeaderPubkey");
+      return Array(limit).fill("SlotLeaderPublicKey");
     },
     
     getInflationRate: async () => {
@@ -557,8 +547,8 @@ export class MockHeliusClient implements HeliusClient {
     
     getBlock: async (slot: number, config?: { commitment?: Commitment, maxSupportedTransactionVersion?: number }) => {
       return {
-        blockhash: "MockBlockhash",
-        previousBlockhash: "MockPreviousBlockhash",
+        blockhash: "BlockHash",
+        previousBlockhash: "PreviousBlockHash",
         parentSlot: slot - 1,
         transactions: [],
         rewards: [],
@@ -572,11 +562,12 @@ export class MockHeliusClient implements HeliusClient {
         context: { slot: 123456789 },
         value: {
           byIdentity: {
-            "MockIdentity": [100, 90] // [blocks produced, blocks skipped]
+            "ValidatorIdentity1": [100, 90],
+            "ValidatorIdentity2": [95, 85]
           },
           range: {
             firstSlot: config?.range?.firstSlot || 123456789,
-            lastSlot: config?.range?.lastSlot || 123456790
+            lastSlot: config?.range?.lastSlot || 123456889
           }
         }
       };
@@ -586,13 +577,10 @@ export class MockHeliusClient implements HeliusClient {
       return {
         context: { slot: 123456789 },
         value: {
-          total: 1000000000000,
-          circulating: 900000000000,
-          nonCirculating: 100000000000,
-          nonCirculatingAccounts: config?.excludeNonCirculatingAccountsList ? undefined : [
-            "NonCirculatingAccount1",
-            "NonCirculatingAccount2"
-          ]
+          total: 1000000000,
+          circulating: 900000000,
+          nonCirculating: 100000000,
+          nonCirculatingAccounts: config?.excludeNonCirculatingAccountsList ? undefined : ["Account1", "Account2"]
         }
       };
     },
@@ -604,28 +592,28 @@ export class MockHeliusClient implements HeliusClient {
     getHighestSnapshotSlot: async () => {
       return {
         full: 123456789,
-        incremental: 123456790
+        incremental: 123456788
       };
     },
     
     getMaxRetransmitSlot: async () => {
-      return 12345; // Mock slot number
+      return 123456789;
     },
     
     getMaxShredInsertSlot: async () => {
-      return 67890; // Mock slot number
+      return 123456789;
     },
     
     simulateTransaction: async (transaction: string, config?: any) => {
       return {
         context: {
-          slot: 1234567
+          slot: 123456789
         },
         value: {
           err: null,
-          logs: ["Program log: Mock simulation successful"],
+          logs: ["Program log: success"],
           accounts: null,
-          unitsConsumed: 0
+          unitsConsumed: 1000
         }
       };
     }
