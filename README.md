@@ -32,7 +32,7 @@ The MCP server exposes the following tools to Claude:
 - `helius_get_assets_by_owner`: Get assets owned by a specific address
 - `helius_get_assets_by_creator`: Get assets created by a specific address
 - `helius_get_assets_by_authority`: Get assets by authority address
-- `helius_search_assets`: Search for assets using a query string
+- `helius_search_assets`: Search for assets using various filters (ownerAddress, creatorAddress, compressed, etc.)
 - `helius_get_signatures_for_asset`: Get signatures associated with an asset
 - `helius_get_nft_editions`: Get NFT editions for a master edition
 

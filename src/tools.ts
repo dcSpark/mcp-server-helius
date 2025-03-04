@@ -371,15 +371,40 @@ export const tools = [
   },
   {
     name: 'helius_search_assets',
-    description: 'Search for assets using a query string',
+    description: 'Search for assets using various filters',
     inputSchema: {
       type: 'object',
       properties: {
-        query: { type: 'string' },
         page: { type: 'number' },
-        limit: { type: 'number' }
+        limit: { type: 'number' },
+        cursor: { type: 'string' },
+        before: { type: 'string' },
+        after: { type: 'string' },
+        creatorAddress: { type: 'string' },
+        ownerAddress: { type: 'string' },
+        jsonUri: { type: 'string' },
+        grouping: { 
+          type: 'array',
+          items: { type: 'string' }
+        },
+        burnt: { type: 'boolean' },
+        frozen: { type: 'boolean' },
+        supplyMint: { type: 'string' },
+        supply: { type: 'number' },
+        delegate: { type: 'string' },
+        compressed: { type: 'boolean' }
       },
-      required: ['query']
+      // At least one filter parameter should be provided
+      anyOf: [
+        { required: ['ownerAddress'] },
+        { required: ['creatorAddress'] },
+        { required: ['jsonUri'] },
+        { required: ['supplyMint'] },
+        { required: ['delegate'] },
+        { required: ['burnt'] },
+        { required: ['frozen'] },
+        { required: ['compressed'] }
+      ]
     }
   },
   {

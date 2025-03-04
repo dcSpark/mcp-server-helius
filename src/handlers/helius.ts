@@ -25,7 +25,10 @@ import {
   GetPriorityFeeEstimateInput,
   GetFeeForMessageInput,
   ExecuteJupiterSwapInput,
-  GetTokenLargestAccountsInput
+  GetTokenLargestAccountsInput,
+  GetAssetsByAuthorityInput,
+  SearchAssetsInput,
+  GetSignaturesForAssetInput
 } from "./helius.types.js";
 import { PublicKey, Commitment, VersionedMessage, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { ToolResultSchema } from "../types.js";
@@ -390,7 +393,7 @@ export const getAssetsByCreatorHandler = async (input: { creator: string, page?:
   }
 }
 
-export const getAssetsByAuthorityHandler = async (input: { authority: string, page?: number, limit?: number }): Promise<ToolResultSchema<any>> => {
+export const getAssetsByAuthorityHandler = async (input: GetAssetsByAuthorityInput): Promise<ToolResultSchema<any>> => {
   try {
     // Fix the parameter name mismatch
     const params = {
@@ -405,7 +408,7 @@ export const getAssetsByAuthorityHandler = async (input: { authority: string, pa
   }
 }
 
-export const searchAssetsHandler = async (input: { query: string, page?: number, limit?: number }): Promise<ToolResultSchema<any>> => {
+export const searchAssetsHandler = async (input: SearchAssetsInput): Promise<ToolResultSchema<any>> => {
   try {
     const assets = await (helius as any as Helius).rpc.searchAssets(input);
     return createSuccessResponse(`Search results: ${JSON.stringify(assets, null, 2)}`);
@@ -414,7 +417,7 @@ export const searchAssetsHandler = async (input: { query: string, page?: number,
   }
 }
 
-export const getSignaturesForAssetHandler = async (input: { id: string, page?: number, limit?: number }): Promise<ToolResultSchema<any>> => {
+export const getSignaturesForAssetHandler = async (input: GetSignaturesForAssetInput): Promise<ToolResultSchema<any>> => {
   try {
     // Fix the parameter type mismatch
     const params = {

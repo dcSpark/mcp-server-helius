@@ -51,7 +51,23 @@ export interface HeliusClient {
     getAssetsByOwner: (params: { ownerAddress: string, page?: number, limit?: number }) => Promise<any>;
     getAssetsByCreator: (params: { creatorAddress: string, page?: number, limit?: number }) => Promise<any>;
     getAssetsByAuthority: (params: { authorityAddress: string, page?: number, limit?: number }) => Promise<any>;
-    searchAssets: (params: { query: string, page?: number, limit?: number }) => Promise<any>;
+    searchAssets: (params: { 
+      page?: number, 
+      limit?: number, 
+      cursor?: string,
+      before?: string,
+      after?: string,
+      creatorAddress?: string,
+      ownerAddress?: string,
+      jsonUri?: string,
+      grouping?: string[],
+      burnt?: boolean,
+      frozen?: boolean,
+      supplyMint?: string,
+      supply?: number,
+      delegate?: string,
+      compressed?: boolean
+    }) => Promise<any>;
     getSignaturesForAsset: (params: { id: string, page?: number, limit?: number }) => Promise<any>;
     getNftEditions: (params: { masterEditionId: string, page?: number, limit?: number }) => Promise<any>;
     getTokenAccounts: (params: { mint?: string, owner?: string, page?: number, limit?: number }) => Promise<any>;
@@ -544,7 +560,23 @@ export class MockHeliusClient implements HeliusClient {
       };
     },
     
-    searchAssets: async (params: { query: string, page?: number, limit?: number }) => {
+    searchAssets: async (params: { 
+      page?: number, 
+      limit?: number, 
+      cursor?: string,
+      before?: string,
+      after?: string,
+      creatorAddress?: string,
+      ownerAddress?: string,
+      jsonUri?: string,
+      grouping?: string[],
+      burnt?: boolean,
+      frozen?: boolean,
+      supplyMint?: string,
+      supply?: number,
+      delegate?: string,
+      compressed?: boolean
+    }) => {
       const limit = params.limit || 10;
       return {
         total: 100,
@@ -554,15 +586,18 @@ export class MockHeliusClient implements HeliusClient {
           id: `MockAsset${i}`,
           content: {
             metadata: {
-              name: `Mock Asset ${i} ${params.query}`,
+              name: `Mock Asset ${i}`,
               symbol: "MOCK",
-              description: `A mock asset for testing with query: ${params.query}`
+              description: "A mock asset for testing"
             }
           },
           ownership: {
-            owner: "MockOwner",
-            delegate: null
-          }
+            owner: params.ownerAddress || "MockOwner",
+            delegate: params.delegate || null
+          },
+          compressed: params.compressed || false,
+          burnt: params.burnt || false,
+          frozen: params.frozen || false
         }))
       };
     },

@@ -206,9 +206,21 @@ export type GetAssetsByAuthorityInput = {
 }
 
 export type SearchAssetsInput = {
-  query: string;
   page?: number;
   limit?: number;
+  cursor?: string;
+  before?: string;
+  after?: string;
+  creatorAddress?: string;
+  ownerAddress?: string;
+  jsonUri?: string;
+  grouping?: string[];
+  burnt?: boolean;
+  frozen?: boolean;
+  supplyMint?: string;
+  supply?: number;
+  delegate?: string;
+  compressed?: boolean;
 }
 
 export type GetSignaturesForAssetInput = {
