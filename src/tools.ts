@@ -26,7 +26,35 @@ import {
   sendJitoBundleHandler,
   getBundleStatusesHandler,
   getFeeForMessageHandler,
-  executeJupiterSwapHandler
+  executeJupiterSwapHandler,
+  getBlockTimeHandler,
+  getBlockCommitmentHandler,
+  getClusterNodesHandler,
+  getIdentityHandler,
+  getSlotLeaderHandler,
+  getGenesisHashHandler,
+  getStakeMinimumDelegationHandler,
+  getVoteAccountsHandler,
+  getInflationGovernorHandler,
+  minimumLedgerSlotHandler,
+  requestAirdropHandler,
+  getTokenAccountsByDelegateHandler,
+  getBlocksWithLimitHandler,
+  getBlocksHandler,
+  getFirstAvailableBlockHandler,
+  getSlotLeadersHandler,
+  getInflationRateHandler,
+  getSignatureStatusesHandler,
+  isBlockhashValidHandler,
+  getRecentPrioritizationFeesHandler,
+  getBlockHandler,
+  getBlockProductionHandler,
+  getSupplyHandler,
+  getTransactionCountHandler,
+  getHighestSnapshotSlotHandler,
+  getMaxRetransmitSlotHandler,
+  getMaxShredInsertSlotHandler,
+  simulateTransactionHandler
 } from "./handlers/helius.js";
 
 export const tools = [
@@ -502,6 +530,324 @@ export const tools = [
       },
       required: ['inputMint', 'outputMint', 'amount', 'signer']
     }
+  },
+  {
+    name: "helius_get_block_time",
+    description: "Get the estimated production time of a block",
+    inputSchema: {
+      type: "object",
+      properties: {
+        slot: { type: "number" },
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: ["slot"]
+    }
+  },
+  {
+    name: "helius_get_block_commitment",
+    description: "Get block commitment information",
+    inputSchema: {
+      type: "object",
+      properties: {
+        block: { type: "number" }
+      },
+      required: ["block"]
+    }
+  },
+  {
+    name: "helius_get_cluster_nodes",
+    description: "Get information about all the nodes participating in the cluster",
+    inputSchema: {
+      type: "object",
+      properties: {},
+      required: []
+    }
+  },
+  {
+    name: "helius_get_identity",
+    description: "Get the identity pubkey for the current node",
+    inputSchema: {
+      type: "object",
+      properties: {},
+      required: []
+    }
+  },
+  {
+    name: "helius_get_slot_leader",
+    description: "Get the current slot leader",
+    inputSchema: {
+      type: "object",
+      properties: {
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: []
+    }
+  },
+  {
+    name: "helius_get_genesis_hash",
+    description: "Get the genesis hash",
+    inputSchema: {
+      type: "object",
+      properties: {},
+      required: []
+    }
+  },
+  {
+    name: "helius_get_stake_minimum_delegation",
+    description: "Get the minimum stake delegation amount",
+    inputSchema: {
+      type: "object",
+      properties: {
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: []
+    }
+  },
+  {
+    name: "helius_get_vote_accounts",
+    description: "Get the current vote accounts",
+    inputSchema: {
+      type: "object",
+      properties: {
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] },
+        votePubkey: { type: "string" },
+        keepUnstakedDelinquents: { type: "boolean" }
+      },
+      required: []
+    }
+  },
+  {
+    name: "helius_get_inflation_governor",
+    description: "Get the current inflation governor",
+    inputSchema: {
+      type: "object",
+      properties: {
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: []
+    }
+  },
+  {
+    name: "helius_minimum_ledger_slot",
+    description: "Get the current minimum ledger slot",
+    inputSchema: {
+      type: "object",
+      properties: {},
+      required: []
+    }
+  },
+  {
+    name: "helius_request_airdrop",
+    description: "Request an airdrop of SOL to a Solana address",
+    inputSchema: {
+      type: "object",
+      properties: {
+        publicKey: { type: "string" },
+        lamports: { type: "number" },
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: ["publicKey", "lamports"]
+    }
+  },
+  {
+    name: "helius_get_token_accounts_by_delegate",
+    description: "Get all token accounts by delegate",
+    inputSchema: {
+      type: "object",
+      properties: {
+        delegateAddress: { type: "string" },
+        programId: { type: "string" },
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: ["delegateAddress", "programId"]
+    }
+  },
+  {
+    name: "helius_get_blocks_with_limit",
+    description: "Get a list of blocks between a start slot and a limit",
+    inputSchema: {
+      type: "object",
+      properties: {
+        startSlot: { type: "number" },
+        limit: { type: "number" },
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: ["startSlot", "limit"]
+    }
+  },
+  {
+    name: "helius_get_blocks",
+    description: "Get a list of blocks between two slots",
+    inputSchema: {
+      type: "object",
+      properties: {
+        startSlot: { type: "number" },
+        endSlot: { type: "number" },
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: ["startSlot", "endSlot"]
+    }
+  },
+  {
+    name: "helius_get_first_available_block",
+    description: "Get the first available block in the ledger",
+    inputSchema: {
+      type: "object",
+      properties: {},
+      required: []
+    }
+  },
+  {
+    name: "helius_get_slot_leaders",
+    description: "Get slot leaders for a range of slots",
+    inputSchema: {
+      type: "object",
+      properties: {
+        startSlot: { type: "number" },
+        limit: { type: "number" }
+      },
+      required: ["startSlot", "limit"]
+    }
+  },
+  {
+    name: "helius_get_inflation_rate",
+    description: "Get the current inflation rate",
+    inputSchema: {
+      type: "object",
+      properties: {},
+      required: []
+    }
+  },
+  {
+    name: "helius_get_signature_statuses",
+    description: "Get the statuses of a list of signatures",
+    inputSchema: {
+      type: "object",
+      properties: {
+        signatures: { type: "array", items: { type: "string" } },
+        searchTransactionHistory: { type: "boolean" }
+      },
+      required: ["signatures"]
+    }
+  },
+  {
+    name: "helius_is_blockhash_valid",
+    description: "Check if a blockhash is still valid",
+    inputSchema: {
+      type: "object",
+      properties: {
+        blockhash: { type: "string" },
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: ["blockhash"]
+    }
+  },
+  {
+    name: "helius_get_recent_prioritization_fees",
+    description: "Get recent prioritization fees",
+    inputSchema: {
+      type: "object",
+      properties: {
+        addresses: { type: "array", items: { type: "string" } }
+      },
+      required: []
+    }
+  },
+  {
+    name: "helius_get_block",
+    description: "Get information about a specific block",
+    inputSchema: {
+      type: "object",
+      properties: {
+        slot: { type: "number" },
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] },
+        transactionDetails: { type: "string", enum: ["full", "signatures", "none"] },
+        rewards: { type: "boolean" },
+        maxSupportedTransactionVersion: { type: "number" }
+      },
+      required: ["slot"]
+    }
+  },
+  {
+    name: "helius_get_block_production",
+    description: "Get block production information",
+    inputSchema: {
+      type: "object",
+      properties: {
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] },
+        range: {
+          type: "object",
+          properties: {
+            firstSlot: { type: "number" },
+            lastSlot: { type: "number" }
+          }
+        },
+        identity: { type: "string" }
+      },
+      required: []
+    }
+  },
+  {
+    name: "helius_get_supply",
+    description: "Get information about the current supply",
+    inputSchema: {
+      type: "object",
+      properties: {
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] },
+        excludeNonCirculatingAccountsList: { type: "boolean" }
+      },
+      required: []
+    }
+  },
+  {
+    name: "helius_get_transaction_count",
+    description: "Get the current transaction count",
+    inputSchema: {
+      type: "object",
+      properties: {
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: []
+    }
+  },
+  {
+    name: "helius_get_highest_snapshot_slot",
+    description: "Get the highest snapshot slot",
+    inputSchema: {
+      type: "object",
+      properties: {},
+      required: []
+    }
+  },
+  {
+    name: "helius_get_max_retransmit_slot",
+    description: "Get the maximum retransmit slot",
+    inputSchema: {
+      type: "object",
+      properties: {},
+      required: []
+    }
+  },
+  {
+    name: "helius_get_max_shred_insert_slot",
+    description: "Get the maximum shred insert slot",
+    inputSchema: {
+      type: "object",
+      properties: {},
+      required: []
+    }
+  },
+  {
+    name: "helius_simulate_transaction",
+    description: "Simulate a transaction",
+    inputSchema: {
+      type: "object",
+      properties: {
+        transaction: { type: "string" },
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: ["transaction"]
+    }
   }
   /*
   {
@@ -562,6 +908,34 @@ export const handlers: handlerDictionary = {
   "helius_send_jito_bundle": helius.sendJitoBundleHandler,
   "helius_get_bundle_statuses": helius.getBundleStatusesHandler,
   "helius_get_fee_for_message": getFeeForMessageHandler,
-  "helius_execute_jupiter_swap": executeJupiterSwapHandler
+  "helius_execute_jupiter_swap": executeJupiterSwapHandler,
+  "helius_get_block_time": getBlockTimeHandler,
+  "helius_get_block_commitment": getBlockCommitmentHandler,
+  "helius_get_cluster_nodes": getClusterNodesHandler,
+  "helius_get_identity": getIdentityHandler,
+  "helius_get_slot_leader": getSlotLeaderHandler,
+  "helius_get_genesis_hash": getGenesisHashHandler,
+  "helius_get_stake_minimum_delegation": getStakeMinimumDelegationHandler,
+  "helius_get_vote_accounts": getVoteAccountsHandler,
+  "helius_get_inflation_governor": getInflationGovernorHandler,
+  "helius_minimum_ledger_slot": minimumLedgerSlotHandler,
+  "helius_request_airdrop": requestAirdropHandler,
+  "helius_get_token_accounts_by_delegate": getTokenAccountsByDelegateHandler,
+  "helius_get_blocks_with_limit": getBlocksWithLimitHandler,
+  "helius_get_blocks": getBlocksHandler,
+  "helius_get_first_available_block": getFirstAvailableBlockHandler,
+  "helius_get_slot_leaders": getSlotLeadersHandler,
+  "helius_get_inflation_rate": getInflationRateHandler,
+  "helius_get_signature_statuses": getSignatureStatusesHandler,
+  "helius_is_blockhash_valid": isBlockhashValidHandler,
+  "helius_get_recent_prioritization_fees": getRecentPrioritizationFeesHandler,
+  "helius_get_block": getBlockHandler,
+  "helius_get_block_production": getBlockProductionHandler,
+  "helius_get_supply": getSupplyHandler,
+  "helius_get_transaction_count": getTransactionCountHandler,
+  "helius_get_highest_snapshot_slot": getHighestSnapshotSlotHandler,
+  "helius_get_max_retransmit_slot": getMaxRetransmitSlotHandler,
+  "helius_get_max_shred_insert_slot": getMaxShredInsertSlotHandler,
+  "helius_simulate_transaction": simulateTransactionHandler
   // "print_environment": printEnvironmentHandler,
 }

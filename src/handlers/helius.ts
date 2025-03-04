@@ -25,9 +25,34 @@ import {
   GetPriorityFeeEstimateInput,
   GetFeeForMessageInput,
   ExecuteJupiterSwapInput,
-  GetTokenLargestAccountsInput
+  GetTokenLargestAccountsInput,
+  GetBlockTimeInput,
+  GetBlockCommitmentInput,
+  GetClusterNodesInput,
+  GetIdentityInput,
+  GetSlotLeaderInput,
+  GetGenesisHashInput,
+  GetStakeMinimumDelegationInput,
+  GetVoteAccountsInput,
+  GetInflationGovernorInput,
+  MinimumLedgerSlotInput,
+  RequestAirdropInput,
+  GetTokenAccountsByDelegateInput,
+  GetBlocksWithLimitInput,
+  GetBlocksInput,
+  GetSlotLeadersInput,
+  GetInflationRateInput,
+  GetSignatureStatusesInput,
+  IsBlockhashValidInput,
+  GetRecentPrioritizationFeesInput,
+  GetBlockInput,
+  GetBlockProductionInput,
+  GetSupplyInput,
+  GetTransactionCountInput,
+  GetHighestSnapshotSlotInput,
+  SimulateTransactionInput
 } from "./helius.types.js";
-import { PublicKey, Commitment, VersionedMessage, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { PublicKey, Commitment, VersionedMessage, LAMPORTS_PER_SOL, Finality, VersionedTransaction, GetBlockProductionConfig } from "@solana/web3.js";
 import { ToolResultSchema } from "../types.js";
 import { createErrorResponse, createSuccessResponse, validatePublicKey } from "./utils.js";
 import { HeliusClient, MockHeliusClient } from "./helius-mock.js";
@@ -525,5 +550,272 @@ export const executeJupiterSwapHandler = async (input: ExecuteJupiterSwapInput):
     return createSuccessResponse(`Jupiter swap executed: ${JSON.stringify(result, null, 2)}`);
   } catch (error) {
     return createErrorResponse(`Error executing Jupiter swap: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getBlockTimeHandler = async (input: GetBlockTimeInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const blockTime = await helius.connection.getBlockTime(input.slot);
+    return createSuccessResponse(`Block time: ${blockTime}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting block time: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getBlockCommitmentHandler = async (input: GetBlockCommitmentInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const commitment = await helius.connection.getBlockCommitment(input.block);
+    return createSuccessResponse(`Block commitment: ${JSON.stringify(commitment)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting block commitment: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getClusterNodesHandler = async (input: GetClusterNodesInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const nodes = await helius.connection.getClusterNodes();
+    return createSuccessResponse(`Cluster nodes: ${JSON.stringify(nodes)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting cluster nodes: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getIdentityHandler = async (input: GetIdentityInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const identity = await helius.connection.getIdentity();
+    return createSuccessResponse(`Identity: ${identity}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting identity: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getSlotLeaderHandler = async (input: GetSlotLeaderInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const leader = await helius.connection.getSlotLeader();
+    return createSuccessResponse(`Slot leader: ${leader}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting slot leader: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getGenesisHashHandler = async (input: GetGenesisHashInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const hash = await helius.connection.getGenesisHash();
+    return createSuccessResponse(`Genesis hash: ${hash}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting genesis hash: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getStakeMinimumDelegationHandler = async (input: GetStakeMinimumDelegationInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const delegation = await helius.connection.getStakeMinimumDelegation();
+    return createSuccessResponse(`Minimum stake delegation: ${delegation}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting minimum stake delegation: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getVoteAccountsHandler = async (input: GetVoteAccountsInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const accounts = await helius.connection.getVoteAccounts();
+    return createSuccessResponse(`Vote accounts: ${JSON.stringify(accounts)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting vote accounts: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getInflationGovernorHandler = async (input: GetInflationGovernorInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const governor = await helius.connection.getInflationGovernor();
+    return createSuccessResponse(`Inflation governor: ${JSON.stringify(governor)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting inflation governor: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const minimumLedgerSlotHandler = async (input: MinimumLedgerSlotInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const slot = await helius.connection.getMinimumLedgerSlot();
+    return createSuccessResponse(`Minimum ledger slot: ${slot}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting minimum ledger slot: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const requestAirdropHandler = async (input: RequestAirdropInput): Promise<ToolResultSchema<any>> => {
+  const publicKeyResult = validatePublicKey(input.publicKey);
+  if (!(publicKeyResult instanceof PublicKey)) {
+    return publicKeyResult;
+  }
+
+  try {
+    const signature = await helius.connection.requestAirdrop(publicKeyResult, input.lamports);
+    return createSuccessResponse(`Airdrop requested: ${signature}`);
+  } catch (error) {
+    return createErrorResponse(`Error requesting airdrop: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getTokenAccountsByDelegateHandler = async (input: GetTokenAccountsByDelegateInput): Promise<ToolResultSchema<any>> => {
+  const delegateResult = validatePublicKey(input.delegateAddress);
+  if (!(delegateResult instanceof PublicKey)) {
+    return delegateResult;
+  }
+
+  const programIdResult = validatePublicKey(input.programId);
+  if (!(programIdResult instanceof PublicKey)) {
+    return programIdResult;
+  }
+
+  try {
+    const accounts = await helius.connection.getTokenAccountsByDelegate(delegateResult, { programId: programIdResult });
+    return createSuccessResponse(`Token accounts by delegate: ${JSON.stringify(accounts)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting token accounts by delegate: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getBlocksWithLimitHandler = async (input: GetBlocksWithLimitInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const blocks = await helius.connection.getBlocksWithLimit(input.startSlot, input.limit);
+    return createSuccessResponse(`Blocks: ${JSON.stringify(blocks)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting blocks with limit: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getBlocksHandler = async (input: GetBlocksInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const blocks = await helius.connection.getBlocks(input.startSlot, input.endSlot);
+    return createSuccessResponse(`Blocks: ${JSON.stringify(blocks)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting blocks: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getFirstAvailableBlockHandler = async (): Promise<ToolResultSchema<any>> => {
+  try {
+    const block = await helius.connection.getFirstAvailableBlock();
+    return createSuccessResponse(`First available block: ${block}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting first available block: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getSlotLeadersHandler = async (input: GetSlotLeadersInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const leaders = await helius.connection.getSlotLeaders(input.startSlot, input.limit);
+    return createSuccessResponse(`Slot leaders: ${JSON.stringify(leaders)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting slot leaders: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getInflationRateHandler = async (): Promise<ToolResultSchema<any>> => {
+  try {
+    const rate = await helius.connection.getInflationRate();
+    return createSuccessResponse(`Inflation rate: ${JSON.stringify(rate)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting inflation rate: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getSignatureStatusesHandler = async (input: GetSignatureStatusesInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const statuses = await helius.connection.getSignatureStatuses(input.signatures, { searchTransactionHistory: true });
+    return createSuccessResponse(`Signature statuses: ${JSON.stringify(statuses)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting signature statuses: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const isBlockhashValidHandler = async (input: IsBlockhashValidInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const isValid = await helius.connection.isBlockhashValid(input.blockhash);
+    return createSuccessResponse(`Blockhash validity: ${isValid}`);
+  } catch (error) {
+    return createErrorResponse(`Error checking blockhash validity: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getRecentPrioritizationFeesHandler = async (input: GetRecentPrioritizationFeesInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const fees = await helius.connection.getRecentPrioritizationFees(input.addresses);
+    return createSuccessResponse(`Recent prioritization fees: ${JSON.stringify(fees)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting recent prioritization fees: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getBlockHandler = async (input: GetBlockInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const block = await helius.connection.getBlock(input.slot, { maxSupportedTransactionVersion: input.maxSupportedTransactionVersion });
+    return createSuccessResponse(`Block details: ${JSON.stringify(block)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting block details: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getBlockProductionHandler = async (input: GetBlockProductionInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const production = await helius.connection.getBlockProduction();
+    return createSuccessResponse(`Block production: ${JSON.stringify(production)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting block production: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getSupplyHandler = async (input: GetSupplyInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const supply = await helius.connection.getSupply();
+    return createSuccessResponse(`Supply info: ${JSON.stringify(supply)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting supply info: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getTransactionCountHandler = async (input: GetTransactionCountInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const count = await helius.connection.getTransactionCount();
+    return createSuccessResponse(`Transaction count: ${count}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting transaction count: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getHighestSnapshotSlotHandler = async (input: GetHighestSnapshotSlotInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const slot = await helius.connection.getHighestSnapshotSlot();
+    return createSuccessResponse(`Highest snapshot slot: ${slot}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting highest snapshot slot: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getMaxRetransmitSlotHandler = async (): Promise<ToolResultSchema<any>> => {
+  try {
+    const slot = await helius.connection.getMaxRetransmitSlot();
+    return createSuccessResponse(`Maximum retransmit slot: ${slot}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting maximum retransmit slot: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getMaxShredInsertSlotHandler = async (): Promise<ToolResultSchema<any>> => {
+  try {
+    const slot = await helius.connection.getMaxShredInsertSlot();
+    return createSuccessResponse(`Maximum shred insert slot: ${slot}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting maximum shred insert slot: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const simulateTransactionHandler = async (input: SimulateTransactionInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const simulation = await helius.connection.simulateTransaction(input.transaction);
+    return createSuccessResponse(`Transaction simulation: ${JSON.stringify(simulation)}`);
+  } catch (error) {
+    return createErrorResponse(`Error simulating transaction: ${error instanceof Error ? error.message : String(error)}`);
   }
 }

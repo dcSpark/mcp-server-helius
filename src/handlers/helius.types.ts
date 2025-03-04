@@ -268,3 +268,143 @@ export type ExecuteJupiterSwapInput = {
   signer: string;
 }
 
+export type GetBlockTimeInput = {
+  slot: number;
+  commitment?: "confirmed" | "finalized" | "processed";
+}
+
+export type GetBlockTimeOutput = {
+  timestamp: number | null;
+}
+
+export type GetBlockCommitmentInput = {
+  block: number;
+}
+
+export type GetClusterNodesInput = {}
+
+export type GetIdentityInput = {}
+
+export type GetSlotLeaderInput = {
+  commitment?: "confirmed" | "finalized" | "processed";
+}
+
+export type GetGenesisHashInput = {}
+
+export type GetStakeMinimumDelegationInput = {
+  commitment?: "confirmed" | "finalized" | "processed";
+}
+
+export type GetVoteAccountsInput = {
+  commitment?: "confirmed" | "finalized" | "processed";
+  votePubkey?: string;
+  keepUnstakedDelinquents?: boolean;
+}
+
+export type GetInflationGovernorInput = {
+  commitment?: "confirmed" | "finalized" | "processed";
+}
+
+export type MinimumLedgerSlotInput = {}
+
+export type RequestAirdropInput = {
+  publicKey: string;
+  lamports: number;
+  commitment?: "confirmed" | "finalized" | "processed";
+}
+
+export type GetTokenAccountsByDelegateInput = {
+  delegateAddress: string;
+  programId: string;
+  commitment?: "confirmed" | "finalized" | "processed";
+}
+
+export type GetBlocksWithLimitInput = {
+  startSlot: number;
+  limit: number;
+  commitment?: "confirmed" | "finalized" | "processed";
+}
+
+export type GetBlocksInput = {
+  startSlot: number;
+  endSlot: number;
+  commitment?: "confirmed" | "finalized" | "processed";
+}
+
+export type GetFirstAvailableBlockInput = {}
+
+export type GetSlotLeadersInput = {
+  startSlot: number;
+  limit: number;
+}
+
+export type GetInflationRateInput = {
+  // No input parameters required
+}
+
+export type GetSignatureStatusesInput = {
+  signatures: string[];
+  searchTransactionHistory?: boolean;
+}
+
+export type IsBlockhashValidInput = {
+  blockhash: string;
+  commitment?: "confirmed" | "finalized" | "processed";
+}
+
+export type GetRecentPrioritizationFeesInput = {
+  addresses?: string[];
+}
+
+export type GetBlockInput = {
+  slot: number;
+  commitment?: "confirmed" | "finalized" | "processed";
+  transactionDetails?: "full" | "signatures" | "none";
+  rewards?: boolean;
+  maxSupportedTransactionVersion?: number;
+}
+
+export type GetHealthInput = {}
+
+export type GetBlockProductionInput = {
+  commitment?: "confirmed" | "finalized" | "processed";
+  range?: {
+    firstSlot: number;
+    lastSlot: number;
+  };
+  identity?: string;
+}
+
+export type GetSupplyInput = {
+  commitment?: "confirmed" | "finalized" | "processed";
+  excludeNonCirculatingAccountsList?: boolean;
+}
+
+export type GetTransactionCountInput = {
+  commitment?: "confirmed" | "finalized" | "processed";
+}
+
+export type GetHighestSnapshotSlotInput = {
+  // No input parameters required
+}
+
+export type GetMaxRetransmitSlotInput = {
+  // No input parameters required
+}
+
+export type GetMaxShredInsertSlotInput = {
+  // No input parameters required
+}
+
+export type SimulateTransactionInput = {
+  transaction: string; // Base64 encoded transaction
+  encoding?: string; // Optional encoding parameter, defaults to "base64"
+  commitment?: "confirmed" | "finalized" | "processed";
+  sigVerify?: boolean;
+  replaceRecentBlockhash?: boolean;
+  accounts?: {
+    encoding: string;
+    addresses: string[];
+  };
+}
+
