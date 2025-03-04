@@ -26,7 +26,19 @@ import {
   sendJitoBundleHandler,
   getBundleStatusesHandler,
   getFeeForMessageHandler,
-  executeJupiterSwapHandler
+  executeJupiterSwapHandler,
+  getBlockTimeHandler,
+  getBlockCommitmentHandler,
+  getClusterNodesHandler,
+  getIdentityHandler,
+  getSlotLeaderHandler,
+  getGenesisHashHandler,
+  getStakeMinimumDelegationHandler,
+  getVoteAccountsHandler,
+  getInflationGovernorHandler,
+  minimumLedgerSlotHandler,
+  requestAirdropHandler,
+  getTokenAccountsByDelegateHandler
 } from "./handlers/helius.js";
 
 export const tools = [
@@ -502,6 +514,137 @@ export const tools = [
       },
       required: ['inputMint', 'outputMint', 'amount', 'signer']
     }
+  },
+  {
+    name: "helius_get_block_time",
+    description: "Get the estimated production time of a block",
+    inputSchema: {
+      type: "object",
+      properties: {
+        slot: { type: "number" },
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: ["slot"]
+    }
+  },
+  {
+    name: "helius_get_block_commitment",
+    description: "Get block commitment information",
+    inputSchema: {
+      type: "object",
+      properties: {
+        block: { type: "number" }
+      },
+      required: ["block"]
+    }
+  },
+  {
+    name: "helius_get_cluster_nodes",
+    description: "Get information about all the nodes participating in the cluster",
+    inputSchema: {
+      type: "object",
+      properties: {},
+      required: []
+    }
+  },
+  {
+    name: "helius_get_identity",
+    description: "Get the identity pubkey for the current node",
+    inputSchema: {
+      type: "object",
+      properties: {},
+      required: []
+    }
+  },
+  {
+    name: "helius_get_slot_leader",
+    description: "Get the current slot leader",
+    inputSchema: {
+      type: "object",
+      properties: {
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: []
+    }
+  },
+  {
+    name: "helius_get_genesis_hash",
+    description: "Get the genesis hash",
+    inputSchema: {
+      type: "object",
+      properties: {},
+      required: []
+    }
+  },
+  {
+    name: "helius_get_stake_minimum_delegation",
+    description: "Get the minimum stake delegation amount",
+    inputSchema: {
+      type: "object",
+      properties: {
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: []
+    }
+  },
+  {
+    name: "helius_get_vote_accounts",
+    description: "Get the current vote accounts",
+    inputSchema: {
+      type: "object",
+      properties: {
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] },
+        votePubkey: { type: "string" },
+        keepUnstakedDelinquents: { type: "boolean" }
+      },
+      required: []
+    }
+  },
+  {
+    name: "helius_get_inflation_governor",
+    description: "Get the current inflation governor",
+    inputSchema: {
+      type: "object",
+      properties: {
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: []
+    }
+  },
+  {
+    name: "helius_minimum_ledger_slot",
+    description: "Get the current minimum ledger slot",
+    inputSchema: {
+      type: "object",
+      properties: {},
+      required: []
+    }
+  },
+  {
+    name: "helius_request_airdrop",
+    description: "Request an airdrop of SOL to a Solana address",
+    inputSchema: {
+      type: "object",
+      properties: {
+        publicKey: { type: "string" },
+        lamports: { type: "number" },
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: ["publicKey", "lamports"]
+    }
+  },
+  {
+    name: "helius_get_token_accounts_by_delegate",
+    description: "Get all token accounts by delegate",
+    inputSchema: {
+      type: "object",
+      properties: {
+        delegateAddress: { type: "string" },
+        programId: { type: "string" },
+        commitment: { type: "string", enum: ["confirmed", "finalized", "processed"] }
+      },
+      required: ["delegateAddress", "programId"]
+    }
   }
   /*
   {
@@ -562,6 +705,18 @@ export const handlers: handlerDictionary = {
   "helius_send_jito_bundle": helius.sendJitoBundleHandler,
   "helius_get_bundle_statuses": helius.getBundleStatusesHandler,
   "helius_get_fee_for_message": getFeeForMessageHandler,
-  "helius_execute_jupiter_swap": executeJupiterSwapHandler
+  "helius_execute_jupiter_swap": executeJupiterSwapHandler,
+  "helius_get_block_time": getBlockTimeHandler,
+  "helius_get_block_commitment": getBlockCommitmentHandler,
+  "helius_get_cluster_nodes": getClusterNodesHandler,
+  "helius_get_identity": getIdentityHandler,
+  "helius_get_slot_leader": getSlotLeaderHandler,
+  "helius_get_genesis_hash": getGenesisHashHandler,
+  "helius_get_stake_minimum_delegation": getStakeMinimumDelegationHandler,
+  "helius_get_vote_accounts": getVoteAccountsHandler,
+  "helius_get_inflation_governor": getInflationGovernorHandler,
+  "helius_minimum_ledger_slot": minimumLedgerSlotHandler,
+  "helius_request_airdrop": requestAirdropHandler,
+  "helius_get_token_accounts_by_delegate": getTokenAccountsByDelegateHandler
   // "print_environment": printEnvironmentHandler,
 }

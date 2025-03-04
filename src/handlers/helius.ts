@@ -25,7 +25,19 @@ import {
   GetPriorityFeeEstimateInput,
   GetFeeForMessageInput,
   ExecuteJupiterSwapInput,
-  GetTokenLargestAccountsInput
+  GetTokenLargestAccountsInput,
+  GetBlockTimeInput,
+  GetBlockCommitmentInput,
+  GetClusterNodesInput,
+  GetIdentityInput,
+  GetSlotLeaderInput,
+  GetGenesisHashInput,
+  GetStakeMinimumDelegationInput,
+  GetVoteAccountsInput,
+  GetInflationGovernorInput,
+  MinimumLedgerSlotInput,
+  RequestAirdropInput,
+  GetTokenAccountsByDelegateInput
 } from "./helius.types.js";
 import { PublicKey, Commitment, VersionedMessage, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { ToolResultSchema } from "../types.js";
@@ -525,5 +537,141 @@ export const executeJupiterSwapHandler = async (input: ExecuteJupiterSwapInput):
     return createSuccessResponse(`Jupiter swap executed: ${JSON.stringify(result, null, 2)}`);
   } catch (error) {
     return createErrorResponse(`Error executing Jupiter swap: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getBlockTimeHandler = async (input: GetBlockTimeInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const blockTime = await (helius as any as Helius).connection.getBlockTime(input.slot);
+    return createSuccessResponse(`Block time: ${blockTime}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting block time: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getBlockCommitmentHandler = async (input: GetBlockCommitmentInput): Promise<ToolResultSchema<any>> => {
+  try {
+    // Using any type since getBlockCommitment is not in the Connection type
+    const commitment = await ((helius as any).connection.getBlockCommitment(input.block));
+    return createSuccessResponse(`Block commitment: ${JSON.stringify(commitment)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting block commitment: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getClusterNodesHandler = async (input: GetClusterNodesInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const nodes = await (helius as any as Helius).connection.getClusterNodes();
+    return createSuccessResponse(`Cluster nodes: ${JSON.stringify(nodes)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting cluster nodes: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getIdentityHandler = async (input: GetIdentityInput): Promise<ToolResultSchema<any>> => {
+  try {
+    // Using any type since getIdentity is not in the Connection type
+    const identity = await ((helius as any).connection.getIdentity());
+    return createSuccessResponse(`Identity: ${JSON.stringify(identity)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting identity: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getSlotLeaderHandler = async (input: GetSlotLeaderInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const leader = await (helius as any as Helius).connection.getSlotLeader(input.commitment);
+    return createSuccessResponse(`Slot leader: ${leader}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting slot leader: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getGenesisHashHandler = async (input: GetGenesisHashInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const genesisHash = await (helius as any as Helius).connection.getGenesisHash();
+    return createSuccessResponse(`Genesis hash: ${genesisHash}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting genesis hash: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getStakeMinimumDelegationHandler = async (input: GetStakeMinimumDelegationInput): Promise<ToolResultSchema<any>> => {
+  try {
+    // Using any type since getStakeMinimumDelegation expects a different config type
+    const minDelegation = await ((helius as any).connection.getStakeMinimumDelegation({
+      commitment: input.commitment
+    }));
+    return createSuccessResponse(`Minimum stake delegation: ${minDelegation}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting minimum stake delegation: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getVoteAccountsHandler = async (input: GetVoteAccountsInput): Promise<ToolResultSchema<any>> => {
+  try {
+    // Using any type since getVoteAccounts expects different parameters
+    const voteAccounts = await ((helius as any).connection.getVoteAccounts({
+      commitment: input.commitment,
+      votePubkey: input.votePubkey,
+      keepUnstakedDelinquents: input.keepUnstakedDelinquents
+    }));
+    return createSuccessResponse(`Vote accounts: ${JSON.stringify(voteAccounts)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting vote accounts: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getInflationGovernorHandler = async (input: GetInflationGovernorInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const governor = await (helius as any as Helius).connection.getInflationGovernor(input.commitment);
+    return createSuccessResponse(`Inflation governor: ${JSON.stringify(governor)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting inflation governor: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const minimumLedgerSlotHandler = async (input: MinimumLedgerSlotInput): Promise<ToolResultSchema<any>> => {
+  try {
+    // Using getMinimumLedgerSlot instead of minimumLedgerSlot
+    const slot = await (helius as any as Helius).connection.getMinimumLedgerSlot();
+    return createSuccessResponse(`Minimum ledger slot: ${slot}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting minimum ledger slot: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const requestAirdropHandler = async (input: RequestAirdropInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const publicKey = validatePublicKey(input.publicKey);
+    if (!(publicKey instanceof PublicKey)) {
+      return publicKey;
+    }
+    // Removed the third argument since requestAirdrop only accepts two arguments
+    const signature = await (helius as any as Helius).connection.requestAirdrop(publicKey, input.lamports);
+    return createSuccessResponse(`Airdrop requested: ${signature}`);
+  } catch (error) {
+    return createErrorResponse(`Error requesting airdrop: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getTokenAccountsByDelegateHandler = async (input: GetTokenAccountsByDelegateInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const delegatePublicKey = validatePublicKey(input.delegateAddress);
+    if (!(delegatePublicKey instanceof PublicKey)) {
+      return delegatePublicKey;
+    }
+    const programIdPublicKey = validatePublicKey(input.programId);
+    if (!(programIdPublicKey instanceof PublicKey)) {
+      return programIdPublicKey;
+    }
+    // Using any type since getTokenAccountsByDelegate is not in the Connection type
+    const accounts = await ((helius as any).connection.getTokenAccountsByDelegate(
+      delegatePublicKey,
+      { programId: programIdPublicKey }
+    ));
+    return createSuccessResponse(`Token accounts by delegate: ${JSON.stringify(accounts)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting token accounts by delegate: ${error instanceof Error ? error.message : String(error)}`);
   }
 }

@@ -39,6 +39,33 @@ export interface HeliusClient {
     getCurrentTPS: () => Promise<number>;
     getStakeAccounts: (wallet: string) => Promise<any>;
     getTokenHolders: (mintAddress: string) => Promise<any>;
+    
+    // Newly added RPC methods
+    getBlockTime: (slot: number) => Promise<number | null>;
+    getBlockCommitment: (block: number) => Promise<any>;
+    getClusterNodes: () => Promise<any>;
+    getIdentity: () => Promise<any>;
+    getSlotLeader: (commitment?: Commitment) => Promise<string>;
+    getGenesisHash: () => Promise<string>;
+    getStakeMinimumDelegation: (config?: { commitment?: Commitment }) => Promise<number>;
+    getVoteAccounts: (config?: { votePubkey?: string, commitment?: Commitment, keepUnstakedDelinquents?: boolean }) => Promise<any>;
+    getInflationGovernor: (commitment?: Commitment) => Promise<any>;
+    getMinimumLedgerSlot: () => Promise<number>;
+    requestAirdrop: (publicKey: PublicKey, lamports: number) => Promise<string>;
+    getTokenAccountsByDelegate: (delegate: PublicKey, filter: { programId: PublicKey }) => Promise<any>;
+    getBlocksWithLimit: (startSlot: number, limit: number, commitment?: Commitment) => Promise<number[]>;
+    getBlocks: (startSlot: number, endSlot: number, commitment?: Commitment) => Promise<number[]>;
+    getFirstAvailableBlock: () => Promise<number>;
+    getSlotLeaders: (startSlot: number, limit: number) => Promise<string[]>;
+    getInflationRate: () => Promise<any>;
+    getSignatureStatuses: (signatures: string[], config?: { searchTransactionHistory: boolean }) => Promise<any>;
+    isBlockhashValid: (blockhash: string, commitment?: Commitment) => Promise<boolean>;
+    getRecentPrioritizationFees: (addresses?: string[]) => Promise<any>;
+    getBlock: (slot: number, config?: { commitment?: Commitment, maxSupportedTransactionVersion?: number }) => Promise<any>;
+    getBlockProduction: (config?: { commitment?: Commitment, range?: { firstSlot: number, lastSlot: number }, identity?: string }) => Promise<any>;
+    getSupply: (config?: { commitment?: Commitment, excludeNonCirculatingAccountsList?: boolean }) => Promise<any>;
+    getTransactionCount: (commitment?: Commitment) => Promise<number>;
+    getHighestSnapshotSlot: () => Promise<{ full: number, incremental: number }>;
   };
   
   rpc: {
@@ -357,6 +384,225 @@ export class MockHeliusClient implements HeliusClient {
           }
         }
       ];
+    },
+    
+    // Newly added RPC methods
+    getBlockTime: async (slot: number) => {
+      return Math.floor(Date.now() / 1000); // Current Unix timestamp
+    },
+    
+    getBlockCommitment: async (block: number) => {
+      return {
+        commitment: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32],
+        totalStake: 42
+      };
+    },
+    
+    getClusterNodes: async () => {
+      return [
+        {
+          pubkey: "Node1Pubkey",
+          gossip: "127.0.0.1:8001",
+          tpu: "127.0.0.1:8002",
+          rpc: "127.0.0.1:8003",
+          version: "1.0.0"
+        },
+        {
+          pubkey: "Node2Pubkey",
+          gossip: "127.0.0.1:8011",
+          tpu: "127.0.0.1:8012",
+          rpc: "127.0.0.1:8013",
+          version: "1.0.0"
+        }
+      ];
+    },
+    
+    getIdentity: async () => {
+      return {
+        identity: "MockNodeIdentityPubkey"
+      };
+    },
+    
+    getSlotLeader: async (commitment?: Commitment) => {
+      return "MockSlotLeaderPubkey";
+    },
+    
+    getGenesisHash: async () => {
+      return "MockGenesisHash123456789";
+    },
+    
+    getStakeMinimumDelegation: async (config?: { commitment?: Commitment }) => {
+      return 1000000000; // 1 SOL in lamports
+    },
+    
+    getVoteAccounts: async (config?: { votePubkey?: string, commitment?: Commitment, keepUnstakedDelinquents?: boolean }) => {
+      return {
+        current: [
+          {
+            votePubkey: "Vote1Pubkey",
+            nodePubkey: "Node1Pubkey",
+            activatedStake: 1000000000,
+            epochVoteAccount: true,
+            commission: 10,
+            lastVote: 123456789,
+            epochCredits: [[1, 100, 0], [2, 200, 100]]
+          }
+        ],
+        delinquent: []
+      };
+    },
+    
+    getInflationGovernor: async (commitment?: Commitment) => {
+      return {
+        initial: 0.08,
+        terminal: 0.015,
+        taper: 0.15,
+        foundation: 0.05,
+        foundationTerm: 7.0
+      };
+    },
+    
+    getMinimumLedgerSlot: async () => {
+      return 123456789;
+    },
+    
+    requestAirdrop: async (publicKey: PublicKey, lamports: number) => {
+      return "MockAirdropTransactionSignature";
+    },
+    
+    getTokenAccountsByDelegate: async (delegate: PublicKey, filter: { programId: PublicKey }) => {
+      return {
+        context: { slot: 123456789 },
+        value: [
+          {
+            pubkey: new PublicKey("TokenAccount1Pubkey"),
+            account: {
+              data: {
+                program: "spl-token",
+                parsed: {
+                  info: {
+                    mint: "TokenMint1",
+                    owner: "TokenOwner1",
+                    delegate: delegate.toString(),
+                    delegatedAmount: 1000000000,
+                    state: "initialized"
+                  },
+                  type: "account"
+                }
+              },
+              executable: false,
+              lamports: 1000000000,
+              owner: filter.programId.toString(),
+              rentEpoch: 123
+            }
+          }
+        ]
+      };
+    },
+    
+    getBlocksWithLimit: async (startSlot: number, limit: number, commitment?: Commitment) => {
+      return Array(limit).fill(0).map((_, i) => startSlot + i);
+    },
+    
+    getBlocks: async (startSlot: number, endSlot: number, commitment?: Commitment) => {
+      return Array(endSlot - startSlot + 1).fill(0).map((_, i) => startSlot + i);
+    },
+    
+    getFirstAvailableBlock: async () => {
+      return 1; // First block in the ledger
+    },
+    
+    getSlotLeaders: async (startSlot: number, limit: number) => {
+      return Array(limit).fill(0).map(() => "MockSlotLeaderPubkey");
+    },
+    
+    getInflationRate: async () => {
+      return {
+        total: 0.07,
+        validator: 0.06,
+        foundation: 0.01,
+        epoch: 200
+      };
+    },
+    
+    getSignatureStatuses: async (signatures: string[], config?: { searchTransactionHistory: boolean }) => {
+      return {
+        context: { slot: 123456789 },
+        value: signatures.map(signature => ({
+          slot: 123456789,
+          confirmations: 100,
+          err: null,
+          status: { Ok: null },
+          confirmationStatus: "finalized"
+        }))
+      };
+    },
+    
+    isBlockhashValid: async (blockhash: string, commitment?: Commitment) => {
+      return true;
+    },
+    
+    getRecentPrioritizationFees: async (addresses?: string[]) => {
+      return addresses ? addresses.map(() => ({
+        slot: 123456789,
+        prioritizationFee: 5000
+      })) : [{
+        slot: 123456789,
+        prioritizationFee: 5000
+      }];
+    },
+    
+    getBlock: async (slot: number, config?: { commitment?: Commitment, maxSupportedTransactionVersion?: number }) => {
+      return {
+        blockhash: "MockBlockhash",
+        previousBlockhash: "MockPreviousBlockhash",
+        parentSlot: slot - 1,
+        transactions: [],
+        rewards: [],
+        blockTime: Math.floor(Date.now() / 1000),
+        blockHeight: slot
+      };
+    },
+    
+    getBlockProduction: async (config?: { commitment?: Commitment, range?: { firstSlot: number, lastSlot: number }, identity?: string }) => {
+      return {
+        context: { slot: 123456789 },
+        value: {
+          byIdentity: {
+            "MockIdentity": [100, 90] // [blocks produced, blocks skipped]
+          },
+          range: {
+            firstSlot: config?.range?.firstSlot || 123456789,
+            lastSlot: config?.range?.lastSlot || 123456790
+          }
+        }
+      };
+    },
+    
+    getSupply: async (config?: { commitment?: Commitment, excludeNonCirculatingAccountsList?: boolean }) => {
+      return {
+        context: { slot: 123456789 },
+        value: {
+          total: 1000000000000,
+          circulating: 900000000000,
+          nonCirculating: 100000000000,
+          nonCirculatingAccounts: config?.excludeNonCirculatingAccountsList ? undefined : [
+            "NonCirculatingAccount1",
+            "NonCirculatingAccount2"
+          ]
+        }
+      };
+    },
+    
+    getTransactionCount: async (commitment?: Commitment) => {
+      return 1000000;
+    },
+    
+    getHighestSnapshotSlot: async () => {
+      return {
+        full: 123456789,
+        incremental: 123456790
+      };
     }
   };
   
