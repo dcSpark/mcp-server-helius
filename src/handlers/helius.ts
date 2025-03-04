@@ -24,7 +24,8 @@ import {
   GetBundleStatusesInput,
   GetPriorityFeeEstimateInput,
   GetFeeForMessageInput,
-  ExecuteJupiterSwapInput
+  ExecuteJupiterSwapInput,
+  GetTokenLargestAccountsInput
 } from "./helius.types.js";
 import { PublicKey, Commitment, VersionedMessage, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { ToolResultSchema } from "../types.js";
@@ -99,6 +100,19 @@ export const getTokenSupplyHandler = async (input: GetTokenSupplyInput): Promise
     return createSuccessResponse(`Token supply: ${JSON.stringify(tokenSupply.value)}`);
   } catch (error) {
     return createErrorResponse(`Error getting token supply: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getTokenLargestAccountsHandler = async (input: GetTokenLargestAccountsInput): Promise<ToolResultSchema<any>> => {
+  const tokenAddressResult = validatePublicKey(input.tokenAddress);
+  if (!(tokenAddressResult instanceof PublicKey)) {
+    return tokenAddressResult;
+  }
+  try {
+    const largestAccounts = await (helius as any as Helius).connection.getTokenLargestAccounts(tokenAddressResult, input.commitment);
+    return createSuccessResponse(`Token largest accounts: ${JSON.stringify(largestAccounts.value)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting token largest accounts: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 

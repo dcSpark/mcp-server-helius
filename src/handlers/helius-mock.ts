@@ -12,6 +12,7 @@ export interface HeliusClient {
     getBlockHeight: (commitment?: Commitment) => Promise<number>;
     getTokenAccountsByOwner: (owner: PublicKey, filter: { programId: PublicKey }) => Promise<{ context: { slot: number }, value: Array<{ pubkey: { toString: () => string } }> }>;
     getTokenSupply: (tokenAddress: PublicKey) => Promise<any>;
+    getTokenLargestAccounts: (tokenAddress: PublicKey, commitment?: Commitment) => Promise<{ context: { slot: number }, value: Array<{ address: string, amount: string, decimals: number, uiAmount: number, uiAmountString: string }> }>;
     getLatestBlockhash: (commitment?: Commitment) => Promise<{ blockhash: string, lastValidBlockHeight: number }>;
     getTokenAccountBalance: (tokenAddress: PublicKey, commitment?: Commitment) => Promise<{ value: any }>;
     getSlot: (commitment?: Commitment) => Promise<number>;
@@ -94,6 +95,28 @@ export class MockHeliusClient implements HeliusClient {
     
     getTokenSupply: async (tokenAddress: PublicKey) => {
       return "1000000000";
+    },
+    
+    getTokenLargestAccounts: async (tokenAddress: PublicKey, commitment?: Commitment) => {
+      return {
+        context: { slot: 123456789 },
+        value: [
+          {
+            address: "TokenAccount1",
+            amount: "1000000000",
+            decimals: 6,
+            uiAmount: 1000,
+            uiAmountString: "1000"
+          },
+          {
+            address: "TokenAccount2",
+            amount: "500000000",
+            decimals: 6,
+            uiAmount: 500,
+            uiAmountString: "500"
+          }
+        ]
+      };
     },
     
     getLatestBlockhash: async () => {
