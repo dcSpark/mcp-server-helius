@@ -66,6 +66,9 @@ export interface HeliusClient {
     getSupply: (config?: { commitment?: Commitment, excludeNonCirculatingAccountsList?: boolean }) => Promise<any>;
     getTransactionCount: (commitment?: Commitment) => Promise<number>;
     getHighestSnapshotSlot: () => Promise<{ full: number, incremental: number }>;
+    getMaxRetransmitSlot: () => Promise<number>;
+    getMaxShredInsertSlot: () => Promise<number>;
+    simulateTransaction: (transaction: string, config?: any) => Promise<any>;
   };
   
   rpc: {
@@ -602,6 +605,28 @@ export class MockHeliusClient implements HeliusClient {
       return {
         full: 123456789,
         incremental: 123456790
+      };
+    },
+    
+    getMaxRetransmitSlot: async () => {
+      return 12345; // Mock slot number
+    },
+    
+    getMaxShredInsertSlot: async () => {
+      return 67890; // Mock slot number
+    },
+    
+    simulateTransaction: async (transaction: string, config?: any) => {
+      return {
+        context: {
+          slot: 1234567
+        },
+        value: {
+          err: null,
+          logs: ["Program log: Mock simulation successful"],
+          accounts: null,
+          unitsConsumed: 0
+        }
       };
     }
   };

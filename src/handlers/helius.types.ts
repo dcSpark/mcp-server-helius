@@ -338,7 +338,9 @@ export type GetSlotLeadersInput = {
   limit: number;
 }
 
-export type GetInflationRateInput = {}
+export type GetInflationRateInput = {
+  // No input parameters required
+}
 
 export type GetSignatureStatusesInput = {
   signatures: string[];
@@ -382,5 +384,27 @@ export type GetTransactionCountInput = {
   commitment?: "confirmed" | "finalized" | "processed";
 }
 
-export type GetHighestSnapshotSlotInput = {}
+export type GetHighestSnapshotSlotInput = {
+  // No input parameters required
+}
+
+export type GetMaxRetransmitSlotInput = {
+  // No input parameters required
+}
+
+export type GetMaxShredInsertSlotInput = {
+  // No input parameters required
+}
+
+export type SimulateTransactionInput = {
+  transaction: string; // Base64 encoded transaction
+  encoding?: string; // Optional encoding parameter, defaults to "base64"
+  commitment?: "confirmed" | "finalized" | "processed";
+  sigVerify?: boolean;
+  replaceRecentBlockhash?: boolean;
+  accounts?: {
+    encoding: string;
+    addresses: string[];
+  };
+}
 

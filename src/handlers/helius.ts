@@ -37,9 +37,22 @@ import {
   GetInflationGovernorInput,
   MinimumLedgerSlotInput,
   RequestAirdropInput,
-  GetTokenAccountsByDelegateInput
+  GetTokenAccountsByDelegateInput,
+  GetBlocksWithLimitInput,
+  GetBlocksInput,
+  GetSlotLeadersInput,
+  GetInflationRateInput,
+  GetSignatureStatusesInput,
+  IsBlockhashValidInput,
+  GetRecentPrioritizationFeesInput,
+  GetBlockInput,
+  GetBlockProductionInput,
+  GetSupplyInput,
+  GetTransactionCountInput,
+  GetHighestSnapshotSlotInput,
+  SimulateTransactionInput
 } from "./helius.types.js";
-import { PublicKey, Commitment, VersionedMessage, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { PublicKey, Commitment, VersionedMessage, LAMPORTS_PER_SOL, Finality, VersionedTransaction } from "@solana/web3.js";
 import { ToolResultSchema } from "../types.js";
 import { createErrorResponse, createSuccessResponse, validatePublicKey } from "./utils.js";
 import { HeliusClient, MockHeliusClient } from "./helius-mock.js";
@@ -673,5 +686,204 @@ export const getTokenAccountsByDelegateHandler = async (input: GetTokenAccountsB
     return createSuccessResponse(`Token accounts by delegate: ${JSON.stringify(accounts)}`);
   } catch (error) {
     return createErrorResponse(`Error getting token accounts by delegate: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getBlocksWithLimitHandler = async (input: GetBlocksWithLimitInput): Promise<ToolResultSchema<any>> => {
+  try {
+    // @ts-ignore - Method exists in newer versions of @solana/web3.js
+    const blocks = await (helius as any as Helius).connection.getBlocksWithLimit(
+      input.startSlot,
+      input.limit,
+      input.commitment as Finality
+    );
+    return createSuccessResponse(`Blocks: ${JSON.stringify(blocks)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting blocks with limit: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getBlocksHandler = async (input: GetBlocksInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const blocks = await (helius as any as Helius).connection.getBlocks(
+      input.startSlot,
+      input.endSlot,
+      input.commitment as Finality
+    );
+    return createSuccessResponse(`Blocks: ${JSON.stringify(blocks)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting blocks: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getFirstAvailableBlockHandler = async (): Promise<ToolResultSchema<any>> => {
+  try {
+    const block = await (helius as any as Helius).connection.getFirstAvailableBlock();
+    return createSuccessResponse(`First available block: ${block}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting first available block: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getSlotLeadersHandler = async (input: GetSlotLeadersInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const leaders = await (helius as any as Helius).connection.getSlotLeaders(
+      input.startSlot,
+      input.limit
+    );
+    return createSuccessResponse(`Slot leaders: ${JSON.stringify(leaders)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting slot leaders: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getInflationRateHandler = async (): Promise<ToolResultSchema<any>> => {
+  try {
+    const rate = await (helius as any as Helius).connection.getInflationRate();
+    return createSuccessResponse(`Inflation rate: ${JSON.stringify(rate)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting inflation rate: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getSignatureStatusesHandler = async (input: GetSignatureStatusesInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const statuses = await (helius as any as Helius).connection.getSignatureStatuses(
+      input.signatures,
+      { searchTransactionHistory: input.searchTransactionHistory || false }
+    );
+    return createSuccessResponse(`Signature statuses: ${JSON.stringify(statuses)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting signature statuses: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const isBlockhashValidHandler = async (input: IsBlockhashValidInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const isValid = await (helius as any as Helius).connection.isBlockhashValid(
+      input.blockhash,
+      { commitment: input.commitment as Finality }
+    );
+    return createSuccessResponse(`Blockhash validity: ${isValid}`);
+  } catch (error) {
+    return createErrorResponse(`Error checking blockhash validity: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getRecentPrioritizationFeesHandler = async (input: GetRecentPrioritizationFeesInput): Promise<ToolResultSchema<any>> => {
+  try {
+    // @ts-ignore - Method signature varies between versions
+    const fees = await (helius as any as Helius).connection.getRecentPrioritizationFees(input.addresses);
+    return createSuccessResponse(`Recent prioritization fees: ${JSON.stringify(fees)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting recent prioritization fees: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getBlockHandler = async (input: GetBlockInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const block = await (helius as any as Helius).connection.getBlock(
+      input.slot,
+      {
+        commitment: input.commitment as Finality,
+        maxSupportedTransactionVersion: input.maxSupportedTransactionVersion,
+        transactionDetails: input.transactionDetails || "full",
+        rewards: input.rewards || true
+      }
+    );
+    return createSuccessResponse(`Block details: ${JSON.stringify(block)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting block: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getBlockProductionHandler = async (input: GetBlockProductionInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const production = await (helius as any as Helius).connection.getBlockProduction({
+      commitment: input.commitment as Finality,
+      range: input.range,
+      identity: input.identity
+    });
+    return createSuccessResponse(`Block production: ${JSON.stringify(production)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting block production: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getSupplyHandler = async (input: GetSupplyInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const supply = await (helius as any as Helius).connection.getSupply({
+      commitment: input.commitment as Finality,
+      excludeNonCirculatingAccountsList: input.excludeNonCirculatingAccountsList || false
+    });
+    return createSuccessResponse(`Supply info: ${JSON.stringify(supply)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting supply: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getTransactionCountHandler = async (input: GetTransactionCountInput): Promise<ToolResultSchema<any>> => {
+  try {
+    const count = await (helius as any as Helius).connection.getTransactionCount(
+      input.commitment as Finality
+    );
+    return createSuccessResponse(`Transaction count: ${count}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting transaction count: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getHighestSnapshotSlotHandler = async (): Promise<ToolResultSchema<any>> => {
+  try {
+    // @ts-ignore - Method exists in newer versions of @solana/web3.js
+    const slot = await (helius as any as Helius).connection.getHighestSnapshotSlot();
+    return createSuccessResponse(`Highest snapshot slot: ${JSON.stringify(slot)}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting highest snapshot slot: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getMaxRetransmitSlotHandler = async (): Promise<ToolResultSchema<any>> => {
+  try {
+    // @ts-ignore - Method exists in newer versions of @solana/web3.js
+    const slot = await (helius as any as Helius).connection.getMaxRetransmitSlot();
+    return createSuccessResponse(`Maximum retransmit slot: ${slot}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting maximum retransmit slot: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const getMaxShredInsertSlotHandler = async (): Promise<ToolResultSchema<any>> => {
+  try {
+    // @ts-ignore - Method exists in newer versions of @solana/web3.js
+    const slot = await (helius as any as Helius).connection.getMaxShredInsertSlot();
+    return createSuccessResponse(`Maximum shred insert slot: ${slot}`);
+  } catch (error) {
+    return createErrorResponse(`Error getting maximum shred insert slot: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export const simulateTransactionHandler = async (input: SimulateTransactionInput): Promise<ToolResultSchema<any>> => {
+  try {
+    // Create simulation options
+    const opts: any = {};
+    if (input.sigVerify !== undefined) opts.sigVerify = input.sigVerify;
+    if (input.commitment) opts.commitment = input.commitment;
+    if (input.replaceRecentBlockhash !== undefined) opts.replaceRecentBlockhash = input.replaceRecentBlockhash;
+    if (input.accounts) opts.accounts = input.accounts;
+
+    // Decode the base64 transaction
+    const transactionBuffer = Buffer.from(input.transaction, 'base64');
+    const transaction = VersionedTransaction.deserialize(transactionBuffer);
+
+    // Simulate the transaction
+    const result = await (helius as any as Helius).connection.simulateTransaction(
+      transaction,
+      opts
+    );
+
+    return createSuccessResponse(`Transaction simulation result: ${JSON.stringify(result, null, 2)}`);
+  } catch (error) {
+    return createErrorResponse(`Error simulating transaction: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
