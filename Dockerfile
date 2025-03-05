@@ -1,4 +1,4 @@
-FROM node:22-alpine
+FROM node:18-alpine
 
 WORKDIR /app
 
@@ -26,4 +26,4 @@ RUN npm rebuild bigint-buffer && \
     npm rebuild helius-sdk && \
     npm rebuild
 
-CMD ["node", "build/index.js"]
+CMD ["node", "/app/build/index.js"]

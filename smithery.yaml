@@ -3,16 +3,13 @@ startCommand:
   type: stdio
   configSchema:
     # JSON Schema defining the configuration options for the MCP.
-    {
-      "type": "object",
-      "properties": {
-        "HELIUS_API_KEY": {
-          "type": "string",
-          "description": "The API key for the Helius API"
-        }
-      },
-      "required": ["HELIUS_API_KEY"]
-    }
+    type: object
+    properties:
+      HELIUS_API_KEY:
+        type: string
+        description: The API key for the Helius API
+    required:
+      - HELIUS_API_KEY
   commandFunction:
     # A function that produces the CLI command to start the MCP on stdio.
     |-
