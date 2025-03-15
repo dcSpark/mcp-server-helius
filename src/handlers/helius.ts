@@ -100,7 +100,13 @@ export const getTokenSupplyHandler = async (input: GetTokenSupplyInput): Promise
   }
   try {
     const tokenSupply = await (helius as any as Helius).connection.getTokenSupply(tokenAddressResult);
-    return createSuccessResponse(`Token supply: ${JSON.stringify(tokenSupply.value)}`);
+    if (!tokenSupply) {
+      return createErrorResponse(`Token supply not found for address: ${tokenAddressResult.toString()}`);
+    }
+    return createSuccessResponse(`Token supply:
+      Value: ${tokenSupply.value}
+      Context Slot: ${tokenSupply.context.slot}
+    `);
   } catch (error) {
     return createErrorResponse(`Error getting token supply: ${error instanceof Error ? error.message : String(error)}`);
   }
@@ -411,6 +417,9 @@ export const getAssetsByAuthorityHandler = async (input: GetAssetsByAuthorityInp
 export const searchAssetsHandler = async (input: SearchAssetsInput): Promise<ToolResultSchema<any>> => {
   try {
     const assets = await (helius as any as Helius).rpc.searchAssets(input);
+    if (!assets || assets.items.length === 0) {
+      return createErrorResponse(`No assets found for search: ${JSON.stringify(input, null, 2)}`);
+    }
     return createSuccessResponse(`Search results: ${JSON.stringify(assets, null, 2)}`);
   } catch (error) {
     return createErrorResponse(`Error searching assets: ${error instanceof Error ? error.message : String(error)}`);
