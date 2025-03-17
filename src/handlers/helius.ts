@@ -44,7 +44,7 @@ if (process.env.TEST_MODE === 'true') {
   helius = new Helius(process.env.HELIUS_API_KEY as string) as unknown as HeliusClient;
 }
 
-export const getBalanceHandler = async (input: GetBalanceInput): Promise<ToolResultSchema<any>> => {
+export const getBalanceHandler = async (input: GetBalanceInput): Promise<ToolResultSchema> => {
   try {
     // Validate the public key is a valid format
     const publicKey = validatePublicKey(input.publicKey);
@@ -61,7 +61,7 @@ export const getBalanceHandler = async (input: GetBalanceInput): Promise<ToolRes
   }
 }
 
-export const getBlockHeightHandler = async (input: GetBlockHeightInput): Promise<ToolResultSchema<any>> => {
+export const getBlockHeightHandler = async (input: GetBlockHeightInput): Promise<ToolResultSchema> => {
   try {
     const blockHeight = await (helius as any as Helius).connection.getBlockHeight(input.commitment);
     return createSuccessResponse(`Block height: ${blockHeight}`);
@@ -70,7 +70,7 @@ export const getBlockHeightHandler = async (input: GetBlockHeightInput): Promise
   }
 }
 
-export const getTokenAccountsByOwnerHandler = async (input: GetTokenAccountsByOwnerInput): Promise<ToolResultSchema<any>> => {
+export const getTokenAccountsByOwnerHandler = async (input: GetTokenAccountsByOwnerInput): Promise<ToolResultSchema> => {
   const ownerPublicKeyResult = validatePublicKey(input.publicKey);
   if (!(ownerPublicKeyResult instanceof PublicKey)) {
     return ownerPublicKeyResult;
@@ -93,7 +93,7 @@ export const getTokenAccountsByOwnerHandler = async (input: GetTokenAccountsByOw
   }
 }
 
-export const getTokenSupplyHandler = async (input: GetTokenSupplyInput): Promise<ToolResultSchema<any>> => {
+export const getTokenSupplyHandler = async (input: GetTokenSupplyInput): Promise<ToolResultSchema> => {
   const tokenAddressResult = validatePublicKey(input.tokenAddress);
   if (!(tokenAddressResult instanceof PublicKey)) {
     return tokenAddressResult;
@@ -112,7 +112,7 @@ export const getTokenSupplyHandler = async (input: GetTokenSupplyInput): Promise
   }
 }
 
-export const getTokenLargestAccountsHandler = async (input: GetTokenLargestAccountsInput): Promise<ToolResultSchema<any>> => {
+export const getTokenLargestAccountsHandler = async (input: GetTokenLargestAccountsInput): Promise<ToolResultSchema> => {
   const tokenAddressResult = validatePublicKey(input.tokenAddress);
   if (!(tokenAddressResult instanceof PublicKey)) {
     return tokenAddressResult;
@@ -125,7 +125,7 @@ export const getTokenLargestAccountsHandler = async (input: GetTokenLargestAccou
   }
 }
 
-export const getLatestBlockhashHandler = async (input: GetLatestBlockhashInput): Promise<ToolResultSchema<any>> => {
+export const getLatestBlockhashHandler = async (input: GetLatestBlockhashInput): Promise<ToolResultSchema> => {
   try {
     const { blockhash, lastValidBlockHeight } = await (helius as any as Helius).connection.getLatestBlockhash(input.commitment);
     return createSuccessResponse(`Latest blockhash: ${blockhash}, Last valid block height: ${lastValidBlockHeight}`);
@@ -134,7 +134,7 @@ export const getLatestBlockhashHandler = async (input: GetLatestBlockhashInput):
   }
 }
 
-export const getTokenAccountBalanceHandler = async (input: GetTokenAccountBalanceInput): Promise<ToolResultSchema<any>> => {
+export const getTokenAccountBalanceHandler = async (input: GetTokenAccountBalanceInput): Promise<ToolResultSchema> => {
   const tokenAddressResult = validatePublicKey(input.tokenAddress);
   if (!(tokenAddressResult instanceof PublicKey)) {
     return tokenAddressResult;
@@ -147,7 +147,7 @@ export const getTokenAccountBalanceHandler = async (input: GetTokenAccountBalanc
   }
 }
 
-export const getSlotHandler = async (input: GetSlotInput): Promise<ToolResultSchema<any>> => {
+export const getSlotHandler = async (input: GetSlotInput): Promise<ToolResultSchema> => {
   try {
     const slot = await (helius as any as Helius).connection.getSlot(input.commitment);
     return createSuccessResponse(`Current slot: ${slot}`);
@@ -156,7 +156,7 @@ export const getSlotHandler = async (input: GetSlotInput): Promise<ToolResultSch
   }
 }
 
-export const getTransactionHandler = async (input: GetTransactionInput): Promise<ToolResultSchema<any>> => {
+export const getTransactionHandler = async (input: GetTransactionInput): Promise<ToolResultSchema> => {
   try {
     // Use the newer signature with explicit config object
     const transaction = await (helius as any as Helius).connection.getTransaction(
@@ -176,7 +176,7 @@ export const getTransactionHandler = async (input: GetTransactionInput): Promise
 
 // New handlers for additional Helius RPC methods
 
-export const getAccountInfoHandler = async (input: GetAccountInfoInput): Promise<ToolResultSchema<any>> => {
+export const getAccountInfoHandler = async (input: GetAccountInfoInput): Promise<ToolResultSchema> => {
   const publicKeyResult = validatePublicKey(input.publicKey);
   if (!(publicKeyResult instanceof PublicKey)) {
     return publicKeyResult;
@@ -190,7 +190,7 @@ export const getAccountInfoHandler = async (input: GetAccountInfoInput): Promise
   }
 }
 
-export const getProgramAccountsHandler = async (input: GetProgramAccountsInput): Promise<ToolResultSchema<any>> => {
+export const getProgramAccountsHandler = async (input: GetProgramAccountsInput): Promise<ToolResultSchema> => {
   const programIdResult = validatePublicKey(input.programId);
   if (!(programIdResult instanceof PublicKey)) {
     return programIdResult;
@@ -204,7 +204,7 @@ export const getProgramAccountsHandler = async (input: GetProgramAccountsInput):
   }
 }
 
-export const getSignaturesForAddressHandler = async (input: GetSignaturesForAddressInput): Promise<ToolResultSchema<any>> => {
+export const getSignaturesForAddressHandler = async (input: GetSignaturesForAddressInput): Promise<ToolResultSchema> => {
   const addressResult = validatePublicKey(input.address);
   if (!(addressResult instanceof PublicKey)) {
     return addressResult;
@@ -224,7 +224,7 @@ export const getSignaturesForAddressHandler = async (input: GetSignaturesForAddr
   }
 }
 
-export const getMinimumBalanceForRentExemptionHandler = async (input: GetMinimumBalanceForRentExemptionInput): Promise<ToolResultSchema<any>> => {
+export const getMinimumBalanceForRentExemptionHandler = async (input: GetMinimumBalanceForRentExemptionInput): Promise<ToolResultSchema> => {
   try {
     const minBalance = await (helius as any as Helius).connection.getMinimumBalanceForRentExemption(input.dataSize, input.commitment);
     return createSuccessResponse(`Minimum balance for rent exemption: ${minBalance}`);
@@ -233,7 +233,7 @@ export const getMinimumBalanceForRentExemptionHandler = async (input: GetMinimum
   }
 }
 
-export const getMultipleAccountsHandler = async (input: GetMultipleAccountsInput): Promise<ToolResultSchema<any>> => {
+export const getMultipleAccountsHandler = async (input: GetMultipleAccountsInput): Promise<ToolResultSchema> => {
   try {
     const publicKeys = [];
     for (const pk of input.publicKeys) {
@@ -251,7 +251,7 @@ export const getMultipleAccountsHandler = async (input: GetMultipleAccountsInput
   }
 }
 
-export const getInflationRewardHandler = async (input: GetInflationRewardInput): Promise<ToolResultSchema<any>> => {
+export const getInflationRewardHandler = async (input: GetInflationRewardInput): Promise<ToolResultSchema> => {
   try {
     const addresses = [];
     for (const addr of input.addresses) {
@@ -269,7 +269,7 @@ export const getInflationRewardHandler = async (input: GetInflationRewardInput):
   }
 }
 
-export const getEpochInfoHandler = async (input: GetEpochInfoInput): Promise<ToolResultSchema<any>> => {
+export const getEpochInfoHandler = async (input: GetEpochInfoInput): Promise<ToolResultSchema> => {
   try {
     const epochInfo = await (helius as any as Helius).connection.getEpochInfo(input.commitment);
     return createSuccessResponse(`Epoch info: ${JSON.stringify(epochInfo, null, 2)}`);
@@ -278,7 +278,7 @@ export const getEpochInfoHandler = async (input: GetEpochInfoInput): Promise<Too
   }
 }
 
-export const getEpochScheduleHandler = async (input: GetEpochScheduleInput): Promise<ToolResultSchema<any>> => {
+export const getEpochScheduleHandler = async (input: GetEpochScheduleInput): Promise<ToolResultSchema> => {
   try {
     // getEpochSchedule doesn't accept any parameters in the real SDK
     const epochSchedule = await (helius as any as Helius).connection.getEpochSchedule();
@@ -288,7 +288,7 @@ export const getEpochScheduleHandler = async (input: GetEpochScheduleInput): Pro
   }
 }
 
-export const getLeaderScheduleHandler = async (input: GetLeaderScheduleInput): Promise<ToolResultSchema<any>> => {
+export const getLeaderScheduleHandler = async (input: GetLeaderScheduleInput): Promise<ToolResultSchema> => {
   try {
     // getLeaderSchedule doesn't accept parameters in the real SDK
     const leaderSchedule = await (helius as any as Helius).connection.getLeaderSchedule();
@@ -298,7 +298,7 @@ export const getLeaderScheduleHandler = async (input: GetLeaderScheduleInput): P
   }
 }
 
-export const getRecentPerformanceSamplesHandler = async (input: GetRecentPerformanceSamplesInput): Promise<ToolResultSchema<any>> => {
+export const getRecentPerformanceSamplesHandler = async (input: GetRecentPerformanceSamplesInput): Promise<ToolResultSchema> => {
   try {
     const samples = await (helius as any as Helius).connection.getRecentPerformanceSamples(input.limit);
     return createSuccessResponse(`Recent performance samples: ${JSON.stringify(samples, null, 2)}`);
@@ -307,7 +307,7 @@ export const getRecentPerformanceSamplesHandler = async (input: GetRecentPerform
   }
 }
 
-export const getVersionHandler = async (input: GetVersionInput): Promise<ToolResultSchema<any>> => {
+export const getVersionHandler = async (input: GetVersionInput): Promise<ToolResultSchema> => {
   try {
     const version = await (helius as any as Helius).connection.getVersion();
     return createSuccessResponse(`Version: ${JSON.stringify(version, null, 2)}`);
@@ -317,7 +317,7 @@ export const getVersionHandler = async (input: GetVersionInput): Promise<ToolRes
 }
 
 // DAS Methods
-export const getAssetHandler = async (input: { id: string }): Promise<ToolResultSchema<any>> => {
+export const getAssetHandler = async (input: { id: string }): Promise<ToolResultSchema> => {
   try {
     const asset = await (helius as any as Helius).rpc.getAsset(input.id);
     return createSuccessResponse(`Asset details: ${JSON.stringify(asset, null, 2)}`);
@@ -326,7 +326,7 @@ export const getAssetHandler = async (input: { id: string }): Promise<ToolResult
   }
 }
 
-export const getRwaAssetHandler = async (input: { id: string }): Promise<ToolResultSchema<any>> => {
+export const getRwaAssetHandler = async (input: { id: string }): Promise<ToolResultSchema> => {
   try {
     const asset = await (helius as any as Helius).rpc.getRwaAsset({ id: input.id });
     return createSuccessResponse(`RWA Asset details: ${JSON.stringify(asset, null, 2)}`);
@@ -335,7 +335,7 @@ export const getRwaAssetHandler = async (input: { id: string }): Promise<ToolRes
   }
 }
 
-export const getAssetBatchHandler = async (input: { ids: string[] }): Promise<ToolResultSchema<any>> => {
+export const getAssetBatchHandler = async (input: { ids: string[] }): Promise<ToolResultSchema> => {
   try {
     const assets = await (helius as any as Helius).rpc.getAssetBatch({ ids: input.ids });
     return createSuccessResponse(`Asset batch details: ${JSON.stringify(assets, null, 2)}`);
@@ -344,7 +344,7 @@ export const getAssetBatchHandler = async (input: { ids: string[] }): Promise<To
   }
 }
 
-export const getAssetProofHandler = async (input: { id: string }): Promise<ToolResultSchema<any>> => {
+export const getAssetProofHandler = async (input: { id: string }): Promise<ToolResultSchema> => {
   try {
     const proof = await (helius as any as Helius).rpc.getAssetProof({ id: input.id });
     return createSuccessResponse(`Asset proof: ${JSON.stringify(proof, null, 2)}`);
@@ -353,7 +353,7 @@ export const getAssetProofHandler = async (input: { id: string }): Promise<ToolR
   }
 }
 
-export const getAssetsByGroupHandler = async (input: { groupKey: string, groupValue: string, page?: number, limit?: number }): Promise<ToolResultSchema<any>> => {
+export const getAssetsByGroupHandler = async (input: { groupKey: string, groupValue: string, page?: number, limit?: number }): Promise<ToolResultSchema> => {
   try {
     // Fix the parameter type mismatch
     const params = {
@@ -369,7 +369,7 @@ export const getAssetsByGroupHandler = async (input: { groupKey: string, groupVa
   }
 }
 
-export const getAssetsByOwnerHandler = async (input: { owner: string, page?: number, limit?: number }): Promise<ToolResultSchema<any>> => {
+export const getAssetsByOwnerHandler = async (input: { owner: string, page?: number, limit?: number }): Promise<ToolResultSchema> => {
   try {
     // Fix the parameter name mismatch
     const params = {
@@ -384,7 +384,7 @@ export const getAssetsByOwnerHandler = async (input: { owner: string, page?: num
   }
 }
 
-export const getAssetsByCreatorHandler = async (input: { creator: string, page?: number, limit?: number }): Promise<ToolResultSchema<any>> => {
+export const getAssetsByCreatorHandler = async (input: { creator: string, page?: number, limit?: number }): Promise<ToolResultSchema> => {
   try {
     // Fix the parameter name mismatch
     const params = {
@@ -399,7 +399,7 @@ export const getAssetsByCreatorHandler = async (input: { creator: string, page?:
   }
 }
 
-export const getAssetsByAuthorityHandler = async (input: GetAssetsByAuthorityInput): Promise<ToolResultSchema<any>> => {
+export const getAssetsByAuthorityHandler = async (input: GetAssetsByAuthorityInput): Promise<ToolResultSchema> => {
   try {
     // Fix the parameter name mismatch
     const params = {
@@ -414,7 +414,7 @@ export const getAssetsByAuthorityHandler = async (input: GetAssetsByAuthorityInp
   }
 }
 
-export const searchAssetsHandler = async (input: SearchAssetsInput): Promise<ToolResultSchema<any>> => {
+export const searchAssetsHandler = async (input: SearchAssetsInput): Promise<ToolResultSchema> => {
   try {
     const assets = await (helius as any as Helius).rpc.searchAssets(input);
     if (!assets || assets.items.length === 0) {
@@ -426,7 +426,7 @@ export const searchAssetsHandler = async (input: SearchAssetsInput): Promise<Too
   }
 }
 
-export const getSignaturesForAssetHandler = async (input: GetSignaturesForAssetInput): Promise<ToolResultSchema<any>> => {
+export const getSignaturesForAssetHandler = async (input: GetSignaturesForAssetInput): Promise<ToolResultSchema> => {
   try {
     // Fix the parameter type mismatch
     const params = {
@@ -441,7 +441,7 @@ export const getSignaturesForAssetHandler = async (input: GetSignaturesForAssetI
   }
 }
 
-export const getNftEditionsHandler = async (input: { masterEditionId: string, page?: number, limit?: number }): Promise<ToolResultSchema<any>> => {
+export const getNftEditionsHandler = async (input: { masterEditionId: string, page?: number, limit?: number }): Promise<ToolResultSchema> => {
   try {
     const editions = await (helius as any as Helius).rpc.getNftEditions(input);
     return createSuccessResponse(`NFT editions: ${JSON.stringify(editions, null, 2)}`);
@@ -450,7 +450,7 @@ export const getNftEditionsHandler = async (input: { masterEditionId: string, pa
   }
 }
 
-export const getTokenAccountsHandler = async (input: { mint?: string, owner?: string, page?: number, limit?: number }): Promise<ToolResultSchema<any>> => {
+export const getTokenAccountsHandler = async (input: { mint?: string, owner?: string, page?: number, limit?: number }): Promise<ToolResultSchema> => {
   try {
     const accounts = await (helius as any as Helius).rpc.getTokenAccounts(input);
     return createSuccessResponse(`Token accounts: ${JSON.stringify(accounts, null, 2)}`);
@@ -460,7 +460,7 @@ export const getTokenAccountsHandler = async (input: { mint?: string, owner?: st
 }
 
 // Transaction and Fee Methods
-export const getPriorityFeeEstimateHandler = async (input: GetPriorityFeeEstimateInput): Promise<ToolResultSchema<any>> => {
+export const getPriorityFeeEstimateHandler = async (input: GetPriorityFeeEstimateInput): Promise<ToolResultSchema> => {
   try {
     // This function has parameter type mismatches
     const result = await (helius as any as Helius).rpc.getPriorityFeeEstimate({
@@ -478,7 +478,7 @@ export const getPriorityFeeEstimateHandler = async (input: GetPriorityFeeEstimat
   }
 }
 
-export const pollTransactionConfirmationHandler = async (input: PollTransactionConfirmationInput): Promise<ToolResultSchema<any>> => {
+export const pollTransactionConfirmationHandler = async (input: PollTransactionConfirmationInput): Promise<ToolResultSchema> => {
   try {
     const status = await (helius as any as Helius).rpc.pollTransactionConfirmation(input.signature, { timeout: input.timeout, interval: input.interval });
     return createSuccessResponse(`Transaction status: ${status}`);
@@ -487,7 +487,7 @@ export const pollTransactionConfirmationHandler = async (input: PollTransactionC
   }
 }
 
-export const sendJitoBundleHandler = async (input: SendJitoBundleInput): Promise<ToolResultSchema<any>> => {
+export const sendJitoBundleHandler = async (input: SendJitoBundleInput): Promise<ToolResultSchema> => {
   try {
     const bundleId = await (helius as any as Helius).rpc.sendJitoBundle(input.serializedTransactions, input.jitoApiUrl);
     return createSuccessResponse(`Jito bundle sent: ${bundleId}`);
@@ -496,7 +496,7 @@ export const sendJitoBundleHandler = async (input: SendJitoBundleInput): Promise
   }
 }
 
-export const getBundleStatusesHandler = async (input: GetBundleStatusesInput): Promise<ToolResultSchema<any>> => {
+export const getBundleStatusesHandler = async (input: GetBundleStatusesInput): Promise<ToolResultSchema> => {
   try {
     const statuses = await (helius as any as Helius).rpc.getBundleStatuses(input.bundleIds, input.jitoApiUrl);
     return createSuccessResponse(`Bundle statuses: ${JSON.stringify(statuses, null, 2)}`);
@@ -505,7 +505,7 @@ export const getBundleStatusesHandler = async (input: GetBundleStatusesInput): P
   }
 }
 
-export const getFeeForMessageHandler = async (input: GetFeeForMessageInput): Promise<ToolResultSchema<any>> => {
+export const getFeeForMessageHandler = async (input: GetFeeForMessageInput): Promise<ToolResultSchema> => {
   try {
     const messageBytes = Buffer.from(input.message, 'base64');
     const versionedMessage = VersionedMessage.deserialize(messageBytes);
@@ -516,7 +516,7 @@ export const getFeeForMessageHandler = async (input: GetFeeForMessageInput): Pro
   }
 }
 
-export const executeJupiterSwapHandler = async (input: ExecuteJupiterSwapInput): Promise<ToolResultSchema<any>> => {
+export const executeJupiterSwapHandler = async (input: ExecuteJupiterSwapInput): Promise<ToolResultSchema> => {
   try {
     // Validate the signer is a valid public key format
     const signerPublicKey = validatePublicKey(input.signer);

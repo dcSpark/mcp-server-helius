@@ -1,4 +1,4 @@
-export type ToolResultSchema<T> = {
+export type ToolResultSchema = {
     content: ToolResultContent[],
     isError?: boolean
 }

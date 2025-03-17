@@ -20,7 +20,7 @@ export const createPublicKey = (publicKeyString: string): { publicKey?: PublicKe
  * @param message The error message
  * @returns A ToolResultSchema with the error message
  */
-export const createErrorResponse = <T>(message: string): ToolResultSchema<T> => {
+export const createErrorResponse = (message: string): ToolResultSchema => {
   return {
     content: [{
       type: "text",
@@ -35,7 +35,7 @@ export const createErrorResponse = <T>(message: string): ToolResultSchema<T> => 
  * @param message The success message
  * @returns A ToolResultSchema with the success message
  */
-export const createSuccessResponse = <T>(message: string): ToolResultSchema<T> => {
+export const createSuccessResponse = (message: string): ToolResultSchema => {
   return {
     content: [{
       type: "text",
@@ -50,10 +50,10 @@ export const createSuccessResponse = <T>(message: string): ToolResultSchema<T> =
  * @param publicKeyString The public key string to validate
  * @returns Either a PublicKey object or a ToolResultSchema with an error message
  */
-export const validatePublicKey = <T>(publicKeyString: string): PublicKey | ToolResultSchema<T> => {
+export const validatePublicKey = (publicKeyString: string): PublicKey | ToolResultSchema => {
   const { publicKey, error } = createPublicKey(publicKeyString);
   if (error) {
-    return createErrorResponse<T>(error);
+    return createErrorResponse(error);
   }
   return publicKey!;
 }; 
