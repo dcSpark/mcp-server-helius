@@ -1,6 +1,6 @@
 {
   "name": "@mcp-dockmaster/mcp-server-helius",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "A Model Context Protocol server example",
   "license": "MIT",
   "author": "DC Spark <hello@dcspark.io>",
