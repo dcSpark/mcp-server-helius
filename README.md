@@ -95,9 +95,9 @@ To configure Claude Desktop to use this MCP server:
 {
   "mcpServers": {
     "mcp-server-helius": {
-      "command": "node",
+      "command": "npx",
       "args": [
-        "/path/to/your/mcp-server-helius/build/index.js"
+        "@dcspark/mcp-server-helius"
       ],
       "env": {
         "HELIUS_API_KEY": "your-helius-api-key"
@@ -111,6 +111,11 @@ To configure Claude Desktop to use this MCP server:
 
 ```bash
 HELIUS_API_KEY=your-helius-api-key node build/index.js
+```
+
+You can also run directly using npx:
+```bash
+HELIUS_API_KEY=your-helius-api-key npx @dcspark/mcp-server-helius
 ```
 
 ## Usage
