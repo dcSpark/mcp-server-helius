@@ -8,7 +8,18 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
+      - name: Get release branch
+        id: get_branch
+        run: |
+          RELEASE_BRANCH=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/${{ github.event.release.id }}" \
+            | jq -r .target_commitish)
+          echo "branch=$RELEASE_BRANCH" >> $GITHUB_OUTPUT
+
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ steps.get_branch.outputs.branch }}
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -25,7 +36,7 @@ jobs:
             git config --local user.email "github-actions[bot]@users.noreply.github.com"
             git config --local user.name "github-actions[bot]"
             git commit -am "chore: update package version to $RELEASE_VERSION [skip ci]"
-            git push
+            git push origin ${{ steps.get_branch.outputs.branch }}
           fi
       
       - name: Install dependencies
