@@ -97,6 +97,7 @@ To configure Claude Desktop to use this MCP server:
     "mcp-server-helius": {
       "command": "npx",
       "args": [
+        "-y",
         "@dcspark/mcp-server-helius"
       ],
       "env": {
